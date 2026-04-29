@@ -18,3 +18,9 @@ All tasks:
 
 
 Report:
+
+
+
+
+Ideas:
+- Change "write_to_file" function to "add_record", may make for better readability - Tomas {incomplete}
