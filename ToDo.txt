@@ -13,7 +13,7 @@ Task 3:
 
 
 All tasks:
-- separate CSV files for all warehouse inventory systems, makes life easier.
+- separate CSV files for all warehouse inventory systems, makes life easier. - Tomas {incomplete}
 
 
 
