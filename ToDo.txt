@@ -4,7 +4,7 @@ provided in the List of Keys document. --DONE
 - Derive any additional key components required for the digital signature process from the provided
 parameters, and ensure all required values are explicitly defined in your code. --DONE--
 - Implement a mechanism that enables an inventory node to digitally sign a newly generated inventory
-record prior to submission.
+record prior to submission. --DONE--
 - Implement a verification process that allows other inventory nodes to validate the authenticity and
 integrity of the received record before it proceeds to the consensus stage.
 

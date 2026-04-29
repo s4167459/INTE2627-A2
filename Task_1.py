@@ -1,4 +1,5 @@
 from fileinput import filename
+import hashlib
 
 
 # Functions defined before main code implementation
@@ -26,6 +27,26 @@ def user_input_file_test():
     print("file has been overwritten with singular record for test purposes)")
     user_in += "\n"
     return user_in
+
+def hash_record(record):
+    """Takes in a string record and returns the hash value of that record as an integer
+    """
+    hash_val = int(hashlib.md5(record.encode()).hexdigest(), 16)
+    return hash_val
+
+def sign_record(record, d, n):
+    """Takes in a string record and the private key (d, n) and returns the signature of the record as an integer
+    """
+    hash_val = hash_record(record)
+    s = pow(hash_val, d, n)
+    return s
+
+def verify_signature(record, signature, e, n):
+    """Takes in a string record, the signature of the record, and the public key (e, n) and returns True if the signature is valid and False otherwise
+    """
+    hash_val = hash_record(record)
+    hash_from_signature = pow(signature, e, n)
+    return hash_val == hash_from_signature
 
 # Initialise the cryptographic parameters from key doc and derived from such
 
