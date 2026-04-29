@@ -13,14 +13,8 @@ Task 3:
 
 
 All tasks:
-- separate CSV files for all warehouse inventory systems, makes life easier. - Tomas {incomplete}
+- separate CSV files for all warehouse inventory systems, makes life easier.
 
 
 
 Report:
-
-
-
-
-Ideas:
-- Change "write_to_file" function to "add_record", may make for better readability - Tomas {incomplete}
