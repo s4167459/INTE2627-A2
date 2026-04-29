@@ -28,6 +28,6 @@ def user_input_file_test():
     return user_in
 
  # Main Code Implementation
-write_to_file(r"test_warehouse.csv", user_input_file_test())
+add_record(r"test_warehouse.csv", user_input_file_test())
 
 print(read_file(r"test_warehouse.csv"))
