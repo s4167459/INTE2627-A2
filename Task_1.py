@@ -10,7 +10,7 @@ def read_file(filename):
     file.close()
     return file_contents
 
-def write_to_file(file_name, contents):
+def add_record(file_name, contents):
     file = open(file_name, mode="a")
     file.write(str(contents))
     file.close()
