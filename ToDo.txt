@@ -6,7 +6,7 @@ parameters, and ensure all required values are explicitly defined in your code. 
 - Implement a mechanism that enables an inventory node to digitally sign a newly generated inventory
 record prior to submission. --DONE--
 - Implement a verification process that allows other inventory nodes to validate the authenticity and
-integrity of the received record before it proceeds to the consensus stage.
+integrity of the received record before it proceeds to the consensus stage. --DONE--
 
 Part 1 - Task 2:
 - Select and justify an appropriate consensus mechanism for the given scenario, explaining how it
