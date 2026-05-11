@@ -1,26 +1,38 @@
 from fileinput import filename
 import hashlib
-
+ # imports count to be able to increment the item_id attribute of the Record object
+from itertools import count
 
  # Record class to create an object containing a new record to be added to inventory
+ """
+ I found that there may be too many difficulties with this approach when implementing in python, opted for dictionary
+ instead, but left this here in case we decide it is a better option later.
+ """
 class Record:
 
-    item_id = 0
-    Record.item_id
+    item_id_iter = count()
     def __init__(self, item_id, quantity, price, location):
 
         self.quantity = quantity
         self.price = price
         self.location = location
+        self.item_id = next(Record.item_id_iter)
 
-    def __iter__(self, item_id):
+
 
 
 
 first = Record(1,3,5,"A")
 
+record_list = {}
+
+record_list[1] = (1,3,5,"A")
+print(record_list)
+
 
 # Functions defined before main code implementation
+
+def create_record(id,quantity,price,location):
 
 
 
