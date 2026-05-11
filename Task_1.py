@@ -2,7 +2,27 @@ from fileinput import filename
 import hashlib
 
 
+ # Record class to create an object containing a new record to be added to inventory
+class Record:
+
+    item_id = 0
+    Record.item_id
+    def __init__(self, item_id, quantity, price, location):
+
+        self.quantity = quantity
+        self.price = price
+        self.location = location
+
+    def __iter__(self, item_id):
+
+
+
+first = Record(1,3,5,"A")
+
+
 # Functions defined before main code implementation
+
+
 
 def read_file(filename):
     file = open(filename)
