@@ -51,13 +51,13 @@ def get_new_record(quantity, price, location):
     if location.lower() == 'a':
         add_record(r'InvA.csv', final_str)
 
-    if location.lower() == 'b':
+    elif location.lower() == 'b':
         add_record(r'InvB.csv', final_str)
 
-    if location.lower() == 'c':
+    elif location.lower() == 'c':
         add_record(r'InvC.csv', final_str)
 
-    if location.lower() == 'd':
+    elif location.lower() == 'd':
         add_record(r'InvD.csv', final_str)
 
 def read_file(filename):
