@@ -18,9 +18,13 @@ class Record:
         self.location = location
         self.item_id = next(Record.item_id_iter)
 
+    def create_new_record(self):
+        self.quantity = input("\nPlease enter new item quantity: \n")
+        self.price = input("\nPlease enter new item price: \n")
+        self.location = input("\nPlease enter new item location: \n")
 
 
-
+Record.create_new_record()
 
 first = Record(1,3,5,"A")
 
@@ -32,9 +36,24 @@ print(record_list)
 
 # Functions defined before main code implementation
 
-def create_record(id,quantity,price,location):
 
+global iter_val = var = 0
 
+ # function keeps track of the iterative id of each subsequent record
+ """
+ I'm still trying to figure this out, but i essentially want this function to iterate on the id value for each record
+ automatically. might just scrap it for manual entry
+ """
+def iterate_id():
+    iter_val += 1
+
+def get_new_record(quantity, price, location):
+    record_id = iter_val
+    final_str = f"{record_id}, {quantity}, {price}, {location}\n"
+    iterate_id()
+    if location.lower() == 'a':
+        add_record(r'InvA.csv', final_str)
+    
 
 def read_file(filename):
     file = open(filename)
