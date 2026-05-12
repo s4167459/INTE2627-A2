@@ -48,16 +48,16 @@ def get_new_record(quantity, price, location):
     record_id = iter_val
     final_str = f"{record_id}, {quantity}, {price}, {location}\n"
     iterate_id()
-    if location.lower() == 'a':
+    if location == 126:
         add_record(r'InvA.csv', final_str)
 
-    elif location.lower() == 'b':
+    elif location == 127:
         add_record(r'InvB.csv', final_str)
 
-    elif location.lower() == 'c':
+    elif location == 128:
         add_record(r'InvC.csv', final_str)
 
-    elif location.lower() == 'd':
+    elif location == 129:
         add_record(r'InvD.csv', final_str)
 
 def read_file(filename):
