@@ -8,6 +8,7 @@ from itertools import count
  I found that there may be too many difficulties with this approach when implementing in python, opted for dictionary
  instead, but left this here in case we decide it is a better option later.
  """
+"""
 class Record:
 
     item_id_iter = count()
@@ -17,8 +18,8 @@ class Record:
         self.price = price
         self.location = location
         self.item_id = next(Record.item_id_iter)
-
-
+"""
+#shelved for now
 
 
 
