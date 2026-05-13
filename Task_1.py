@@ -143,7 +143,7 @@ Do_n = (Dp - 1) * (Dq - 1)
 Dd = pow(De, -1, Do_n)
 
 def get_node_keys(node_id):
-    """Takes in a node ID and returns the corresponding public and private key values as a dictionary for conveience's sake"""
+    """Takes in a node ID and returns the corresponding public and private key values as a dictionary for convenience's sake"""
     keys = {
         'A': {'p': Ap, 'q': Aq, 'e': Ae, 'n': An, 'd': Ad},
         'B': {'p': Bp, 'q': Bq, 'e': Be, 'n': Bn, 'd': Bd},
