@@ -89,6 +89,8 @@ def decrypt_result():
 
 
 # Main implementation
-
+"""
+Just wanted to say, damn, this is impressive, i didn't even notice this file until 11pm while working lmao. Nice work!
+"""
 if __name__ == '__main__':
     app.run(debug=True)
