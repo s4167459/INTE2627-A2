@@ -1,4 +1,3 @@
-from fileinput import filename
 import hashlib
  # imports count to be able to increment the item_id attribute of the Record object
 from itertools import count
@@ -21,20 +20,20 @@ class Record:
 """
 #shelved for now
 
-Record.create_new_record()
+#Record.create_new_record()
 
-first = Record(1,3,5,"A")
+#first = Record(1,3,5,"A")
 
-record_list = {}
+#record_list = {}
 
-record_list[1] = (1,3,5,"A")
-print(record_list)
+#record_list[1] = (1,3,5,"A")
+#print(record_list)
 
 
 # Functions defined before main code implementation
 
 
-global iter_val = var = 0
+iter_val = 0
 
  # function keeps track of the iterative id of each subsequent record
  """
@@ -42,6 +41,7 @@ global iter_val = var = 0
  automatically. might just scrap it for manual entry
  """
 def iterate_id():
+    global iter_val
     iter_val += 1
 
 def get_new_record(quantity, price, location):
@@ -142,10 +142,52 @@ Dn = Dp * Dq
 Do_n = (Dp - 1) * (Dq - 1)
 Dd = pow(De, -1, Do_n)
 
+def get_node_keys(node_id):
+    """Takes in a node ID and returns the corresponding public and private key values as a dictionary for conveience's sake"""
+    keys = {
+        'A': {'p': Ap, 'q': Aq, 'e': Ae, 'n': An, 'd': Ad},
+        'B': {'p': Bp, 'q': Bq, 'e': Be, 'n': Bn, 'd': Bd},
+        'C': {'p': Cp, 'q': Cq, 'e': Ce, 'n': Cn, 'd': Cd},
+        'D': {'p': Dp, 'q': Dq, 'e': De, 'n': Dn, 'd': Dd},
+    }
+    return keys[node_id]
+
+def submit_record(node_id, quantity, price, location):
+    """
+    Full Task 1 lifecycle: create -> sign -> verify -> store
+    Returns a dict the frontend can display at each step
+    """
+    # 1. Create the record string
+    record = f"{iter_val}, {quantity}, {price}, {location}"
+    
+    # 2. Pick the right keys for the originating node
+    keys = get_node_keys(node_id)
+    
+    # 3. Sign with originating node's private key
+    signature = sign_record(record, keys['d'], keys['n'])
+    hash_val = hash_record(record)
+    
+    # 4. Each other node verifies with originating node's public key
+    verification_results = {}
+    for nid in ['A', 'B', 'C', 'D']:
+        if nid != node_id:
+            valid = verify_signature(record, signature, keys['e'], keys['n'])
+            verification_results[nid] = valid
+    
+    all_valid = all(verification_results.values())
+    
+    # 5. If all verified, store (Task 2 consensus goes here later)
+    if all_valid:
+        get_new_record(quantity, price, location)
+    
+    return {
+        'record': record,
+        'hash': hex(hash_val),
+        'signature': hex(signature),
+        'verifications': verification_results,
+        'accepted': all_valid
+    }
+
  # Main Code Implementation
-
-add_record(r"test_warehouse.csv", user_input_file_test())
-
-print(read_file(r"test_warehouse.csv"))
 
  # to test for updates
