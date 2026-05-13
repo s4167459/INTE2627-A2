@@ -157,17 +157,17 @@ def submit_record(node_id, quantity, price, location):
     Full Task 1 lifecycle: create -> sign -> verify -> store
     Returns a dict the frontend can display at each step
     """
-    # 1. Create the record string
+    # Create record string
     record = f"{iter_val}, {quantity}, {price}, {location}"
     
-    # 2. Pick the right keys for the originating node
+    # Pick the right keys for the originating node
     keys = get_node_keys(node_id)
     
-    # 3. Sign with originating node's private key
+    # Sign with originating node's private key
     signature = sign_record(record, keys['d'], keys['n'])
     hash_val = hash_record(record)
     
-    # 4. Each other node verifies with originating node's public key
+    # Every other node verifies with originating node's public key
     verification_results = {}
     for nid in ['A', 'B', 'C', 'D']:
         if nid != node_id:
@@ -176,7 +176,7 @@ def submit_record(node_id, quantity, price, location):
     
     all_valid = all(verification_results.values())
     
-    # 5. If all verified, store (Task 2 consensus goes here later)
+    # If all verified, store
     if all_valid:
         get_new_record(quantity, price, location)
     
@@ -187,7 +187,3 @@ def submit_record(node_id, quantity, price, location):
         'verifications': verification_results,
         'accepted': all_valid
     }
-
- # Main Code Implementation
-
- # to test for updates
