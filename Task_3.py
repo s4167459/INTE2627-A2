@@ -50,8 +50,8 @@ C_er = pow(C_er, PKG_e, PKG_n)
 D_er = pow(D_er, PKG_e, PKG_n)
 
 
- # initialising the shared signature
-shared_sig = pow((A_secret_key * B_secret_key * C_secret_key * D_secret_key),1, PKG_n)
+ # initialising the combined secret key (MIGHT BE THE SHARED SIGNATURE????)
+t_key = pow((A_secret_key * B_secret_key * C_secret_key * D_secret_key),1, PKG_n)
 
 
 
@@ -71,7 +71,29 @@ def verify_user_auth(user_sig):
 
 
 
- # encrypting search results.
+ # encrypting search results. {may not be necessary}
 
 def encrypt_search(result, public_key):
 
+
+# TODO: either use hash method from previous task or create new hash method and call inside of below function
+# TODO: message hasn't been hashed yet, this will exclusively be a test format, full implementation after skeleton
+
+def sign_message(message, secret_key, rand_num, n):
+
+    signature = pow((secret_key * rand_num), message, n)
+
+    return signature
+""" Just a general note that the above sign_message method may function better in html if is a print instead of return
+    if that turns out to be the case, feel free to switch it, William.
+    
+    Additional note for html implementation: call this function 4 times, once for each inventory signature,
+    I'll leave an example of which variables to use below, 
+"""
+
+
+ # Calculates multisignature using the
+def multi_sig_msg(sig_1, sig_2, sig_3, sig_4, n):
+    final_sig = pow((sig1 * sig2 * sig_3 * sig_4),1, n)
+
+    return final_sig
