@@ -1,4 +1,1 @@
-Item_ID	Item_QTY	Item_Price	Location
-1	32	12	D
-2	20	14	C
-3	22	16	B
+Item_ID,Item_QTY,Item_Price,Location

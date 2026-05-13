@@ -3,7 +3,7 @@ import hashlib
 from itertools import count
 
  # Record class to create an object containing a new record to be added to inventory
- """
+"""
  I found that there may be too many difficulties with this approach when implementing in python, opted for dictionary
  instead, but left this here in case we decide it is a better option later.
  """
@@ -36,10 +36,10 @@ class Record:
 iter_val = 0
 
  # function keeps track of the iterative id of each subsequent record
- """
+"""
  I'm still trying to figure this out, but i essentially want this function to iterate on the id value for each record
  automatically. might just scrap it for manual entry
- """
+"""
 def iterate_id():
     global iter_val
     iter_val += 1

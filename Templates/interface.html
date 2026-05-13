@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DLT Inventory System</title>
+    <style>
+        nav a { margin-right: 10px; cursor: pointer; }
+        .page { display: none; }
+        .page.active { display: block; }
+        pre { background: #f4f4f4; padding: 10px; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a onclick="showPage('task1')">Task 1 - Signing</a>
+    <a onclick="showPage('task2')">Task 2 - Consensus</a>
+    <a onclick="showPage('part2')">Part 2 - Query</a>
+</nav>
+
+<hr>
+
+<!-- Task 1 -->
+<div id="task1" class="page active">
+    <h2>Task 1 - Digital Signature</h2>
+    <label>Node ID:
+        <select id="t1_node">
+            <option>A</option>
+            <option>B</option>
+            <option>C</option>
+            <option>D</option>
+        </select>
+    </label><br>
+    <label>Quantity: <input type="number" id="t1_quantity"></label><br>
+    <label>Price: <input type="number" id="t1_price"></label><br>
+    <label>Location: <input type="text" id="t1_location"></label><br>
+    <button onclick="signAndVerify()">Sign & Verify</button>
+    <h3>Result</h3>
+    <pre id="t1_result"></pre>
+</div>
+
+<!-- Task 2 -->
+<div id="task2" class="page">
+    <h2>Task 2 - BFT Consensus</h2>
+    <label>Node ID:
+        <select id="t2_node">
+            <option>A</option>
+            <option>B</option>
+            <option>C</option>
+            <option>D</option>
+        </select>
+    </label><br>
+    <label>Quantity: <input type="number" id="t2_quantity"></label><br>
+    <label>Price: <input type="number" id="t2_price"></label><br>
+    <label>Location: <input type="text" id="t2_location"></label><br>
+    <button onclick="submitRecord()">Submit Record</button>
+    <h3>Result</h3>
+    <pre id="t2_result"></pre>
+</div>
+
+<!-- Part 2 -->
+<div id="part2" class="page">
+    <h2>Part 2 - Multi-Signature Query</h2>
+    <p>Placeholder - Task 3 not yet implemented</p>
+</div>
+
+<script>
+    function showPage(id) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
+    async function signAndVerify() {
+        const payload = {
+            node_id: document.getElementById('t1_node').value,
+            quantity: document.getElementById('t1_quantity').value,
+            price: document.getElementById('t1_price').value,
+            location: document.getElementById('t1_location').value
+        };
+        const res = await fetch('/sign_and_verify', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        document.getElementById('t1_result').textContent = JSON.stringify(data, null, 2);
+    }
+
+    async function submitRecord() {
+        const payload = {
+            node_id: document.getElementById('t2_node').value,
+            quantity: document.getElementById('t2_quantity').value,
+            price: document.getElementById('t2_price').value,
+            location: document.getElementById('t2_location').value
+        };
+        const res = await fetch('/submit_record', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        document.getElementById('t2_result').textContent = JSON.stringify(data, null, 2);
+    }
+</script>
+
+</body>
+</html>
