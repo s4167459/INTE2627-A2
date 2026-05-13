@@ -94,6 +94,24 @@ def sign_message(message, secret_key, rand_num, n):
 
  # Calculates multisignature using the
 def multi_sig_msg(sig_1, sig_2, sig_3, sig_4, n):
-    final_sig = pow((sig1 * sig2 * sig_3 * sig_4),1, n)
-
+    final_sig = pow((sig_1 * sig_2 * sig_3 * sig_4),1, n)
     return final_sig
+
+
+ # TODO: URGENT create input tuple and make sure it returns message, signature, and multisig public component t.
+
+ # validates the
+def multi_sig_validation(sig_1, sig_2, sig_3, sig4, multi_sig, e, n):
+    result = pow(s, e, n)
+    return result
+
+""" Below is code test running the math, feel free to ignore, but delete before submission {temporary}"""
+a_sig = sign_message(a)
+b_sig = sign_message(b)
+c_sig = sign_message(c)
+d_sig = sign_message(d)
+multi_sig = multi_sig_msg(fill_later)
+
+multi_sig_validation(a_sig, b_sig, c_sig, d_sig, multi_sig, PKG_e, PKG_n)
+
+
