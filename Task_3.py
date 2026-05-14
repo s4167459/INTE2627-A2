@@ -30,7 +30,7 @@ B_id= 127
 C_id = 128
 D_id = 129
 
- # Derived encrypted IDs
+ # Derived encrypted IDs using PKGs secret key
 Ag = pow(A_id, PKG_d, PKG_n)
 Bg = pow(B_id, PKG_d, PKG_n)
 Cg = pow(C_id, PKG_d, PKG_n)
@@ -81,8 +81,7 @@ def multi_sig_msg(sig_1, sig_2, sig_3, sig_4, n):
  # TODO: URGENT create input tuple and make sure it returns message, signature, and multisig public component t.
 
  # Verifies the returned signatures to ensure they were not tampered
-def Verify(A_id = 126,B_id,C_id,multi_sig, e, n):
-
+def Verify(a= A_id, b= B_id, c= C_id, d= D_id, e= PKG_e, n= PKG_n, t= t_key, msa, msb, msc, msd):
 
 
 
