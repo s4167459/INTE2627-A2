@@ -61,7 +61,8 @@ def query_item(item_id, filename):
         fl.append(line)
     fl = fl[item_id].split(',')
     logs.append
-    return fl[1]
+    return {"record":fl[1],
+            "logs": logs}
 
 
 
@@ -69,12 +70,22 @@ def query_item(item_id, filename):
 # TODO: either use hash method from previous task or create new hash method and call inside of below function
 # TODO: message hasn't been hashed yet, this will exclusively be a test format, full implementation after skeleton
 
- # Signs message using individual
-def sign_message(message, encrypted_id, rand_num, n):
+ # Signs message using the warehouses respective unique encrypted identifiers
+def sign_message(message, encrypted_id, rand_num, n, originator):
 
-    signature = pow((encrypted_id * rand_num), message, n)
+    logs = []
+    logs.append(f"[ORIGINATOR] Warehouse {originator} conducting signing of message")
+    logs.append(f"[MESSAGE] Message to be signed by Warehouse {originator}")
+    logs.append(f"[KEY] Encrypted id of Warehouse {originator}: {encrypted_id}")
+    logs.append(f"[KEY] Random number selected by Warehouse {originator}: {rand_num}")
+    logs.append(f"[CALCULATION] {encrypted_id} * {rand_num}^{message} mod {n}")
+    signature = pow((encrypted_id * pow(rand_num, message)),1, n)
+    logs.append(f"[SIGNATURE] signature generated: {signature}")
 
-    return signature
+    return {"originator": originator,
+            "signature": signature,
+            "logs": logs
+            }
 """ Just a general note that the above sign_message method may function better in html if is a print instead of return
     if that turns out to be the case, feel free to switch it, William.
     
@@ -97,7 +108,10 @@ def multi_sig_msg(sig_A, sig_B, sig_C, sig_D, n, originator):
 
     multi_sig = pow((sig_A * sig_B * sig_C * sig_D),1, n)
     logs.append(f"[SIGNATURE] multi-signature: {multi_sig}")
-    return {"originator": originator}
+    return {"originator": originator,
+            "multisig":multi_sig,
+            "logs":logs
+            }
 
 
  # TODO: URGENT create input tuple and make sure it returns message, signature, and multisig public component t.
@@ -110,12 +124,14 @@ def RSA_encrypt(message,n,e):
     logs.append(f"[KEYS] e = {e}")
     logs.append(f"[MESSAGE] message to be encrypted: {message}")
     ciphertext = pow(message,e,n)
+    logs.append(f"[CALCULATION] {message}^{e} mod {n}")
     logs.append(f"[CIPHERTEXT] generated ciphertext: {ciphertext}")
     return {"message": message,
             "e": e,
             "n": n,
-            "encrypted_message": ciphertext
-    }
+            "encrypted_message": ciphertext,
+            "logs": logs
+            }
 
 
  # Simulates the consensus check to ensure all nodes return the same value
@@ -127,8 +143,9 @@ def confirm_consensus(A_multi_sig, B_multi_sig, C_multi_sig, D_multi_sig, origin
     logs.append(f"[SIGNATURE] Warehouse B: {B_multi_sig}")
     logs.append(f"[SIGNATURE] Warehouse C: {C_multi_sig}")
     logs.append(f"[SIGNATURE] Warehouse D: {D_multi_sig}")
-    logs.append(f"[VERDICT] All signatures match")
+
     if A_multi_sig == B_multi_sig == C_multi_sig == D_multi_sig:
+        logs.append(f"[VERDICT] All signatures match")
         return {f"originator": originator,
                 f"A_sig": A_multi_sig,
                 f"B_sig": B_multi_sig,
@@ -138,11 +155,13 @@ def confirm_consensus(A_multi_sig, B_multi_sig, C_multi_sig, D_multi_sig, origin
                 f"logs": logs
         }
     else:
-        return {f"A_sig": A_multi_sig,
+        logs.append(f"[VERDICT] Mismatch detected.")
+        return {f"originator": originator,
+                f"A_sig": A_multi_sig,
                 f"B_sig": B_multi_sig,
                 f"C_sig": C_multi_sig,
                 f"D_sig": D_multi_sig,
-                f"Verdict": "Mismatch detected.",
+                f"Verdict": "Mismatch detected",
                 f"logs": logs
         }
 
