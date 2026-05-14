@@ -94,6 +94,27 @@ def verify_query():
 def decrypt_result():
     pass
 
+def initialise_csv_files():
+    """
+    Initialises CSV files for each node upon start, ensuring they exist with a header row and trailing newline (just in case).
+    """
+    node_files = [
+        r'InvA.csv',
+        r'InvB.csv',
+        r'InvC.csv',
+        r'InvD.csv',
+    ]
+    header = "Item_ID,Item_QTY,Item_Price,Location\n"
+    for filepath in node_files:
+        try:
+            with open(filepath, 'r') as f:
+                content = f.read()
+            if not content.endswith('\n'):
+                with open(filepath, 'a') as f:
+                    f.write('\n')
+        except FileNotFoundError:
+            with open(filepath, 'w') as f:
+                f.write(header)
 
 # Main implementation
 """
@@ -102,4 +123,5 @@ Just wanted to say, damn, this is impressive, i didn't even notice this file unt
 # Thanks lol
 if __name__ == '__main__':
     """To open the website, run this file and navigate to http://localhost:5000"""
+    initialise_csv_files()
     app.run(debug=True)
