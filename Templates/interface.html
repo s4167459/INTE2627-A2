@@ -7,6 +7,16 @@
         .page { display: none; }
         .page.active { display: block; }
         pre { background: #f4f4f4; padding: 10px; }
+        #terminal {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 10px;
+            font-family: monospace;
+            height: 300px;
+            overflow-y: scroll;
+            white-space: pre-wrap;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -22,18 +32,27 @@
 <!-- Task 1 -->
 <div id="task1" class="page active">
     <h2>Task 1 - Digital Signature</h2>
-    <label>Node ID:
+    <label>Originating Node:
         <select id="t1_node">
             <option>A</option>
             <option>B</option>
             <option>C</option>
             <option>D</option>
         </select>
-    </label><br>
-    <label>Quantity: <input type="number" id="t1_quantity"></label><br>
-    <label>Price: <input type="number" id="t1_price"></label><br>
-    <label>Location: <input type="text" id="t1_location"></label><br>
+    </label><br><br>
+    <label>Quantity: <input type="number" id="t1_quantity"></label><br><br>
+    <label>Price: <input type="number" id="t1_price"></label><br><br>
+    <label>Location:
+        <select id="t1_location">
+            <option>A</option>
+            <option>B</option>
+            <option>C</option>
+            <option>D</option>
+        </select>
+    </label><br><br>
     <button onclick="signAndVerify()">Sign & Verify</button>
+    <h3>Terminal Output</h3>
+    <div id="t1_terminal" style="background:#1e1e1e;color:#00ff00;padding:10px;font-family:monospace;height:300px;overflow-y:scroll;white-space:pre-wrap;"></div>
     <h3>Result</h3>
     <pre id="t1_result"></pre>
 </div>
@@ -41,18 +60,28 @@
 <!-- Task 2 -->
 <div id="task2" class="page">
     <h2>Task 2 - BFT Consensus</h2>
-    <label>Node ID:
+    <label>Originating Node:
         <select id="t2_node">
             <option>A</option>
             <option>B</option>
             <option>C</option>
             <option>D</option>
         </select>
-    </label><br>
-    <label>Quantity: <input type="number" id="t2_quantity"></label><br>
-    <label>Price: <input type="number" id="t2_price"></label><br>
-    <label>Location: <input type="text" id="t2_location"></label><br>
-    <button onclick="submitRecord()">Submit Record</button>
+    </label><br><br>
+    <label>Quantity: <input type="number" id="t2_quantity"></label><br><br>
+    <label>Price: <input type="number" id="t2_price"></label><br><br>
+    <label>Location:
+        <select id="t2_location">
+            <option>A</option>
+            <option>B</option>
+            <option>C</option>
+            <option>D</option>
+        </select>
+    </label><br><br>
+    <button onclick="submitRecord(false)">Submit Record</button>
+    <button onclick="submitRecord(true)">Simulate Malicious Node</button>
+    <h3>Terminal Output</h3>
+    <div id="t2_terminal" style="background:#1e1e1e;color:#00ff00;padding:10px;font-family:monospace;height:300px;overflow-y:scroll;white-space:pre-wrap;"></div>
     <h3>Result</h3>
     <pre id="t2_result"></pre>
 </div>
@@ -82,15 +111,33 @@
             body: JSON.stringify(payload)
         });
         const data = await res.json();
+
+        // Display logs in terminal
+        const terminal = document.getElementById('t1_terminal');
+        terminal.textContent = data.logs.join('\n');
+        terminal.scrollTop = terminal.scrollHeight;
+
+        // Display full result
         document.getElementById('t1_result').textContent = JSON.stringify(data, null, 2);
     }
 
-    async function submitRecord() {
+    async function submitRecord(simulate_malicious) {
+        const node_id = document.getElementById('t2_node').value;
+        const nodes = ['A', 'B', 'C', 'D'];
+
+        // Pick a random non-originating node as malicious if simulate_malicious is true
+        let malicious_node = null;
+        if (simulate_malicious) {
+            const others = nodes.filter(n => n !== node_id);
+            malicious_node = others[Math.floor(Math.random() * others.length)];
+        }
+
         const payload = {
-            node_id: document.getElementById('t2_node').value,
+            node_id: node_id,
             quantity: document.getElementById('t2_quantity').value,
             price: document.getElementById('t2_price').value,
-            location: document.getElementById('t2_location').value
+            location: document.getElementById('t2_location').value,
+            malicious_node: malicious_node
         };
         const res = await fetch('/submit_record', {
             method: 'POST',
@@ -98,6 +145,13 @@
             body: JSON.stringify(payload)
         });
         const data = await res.json();
+
+        // Display logs in terminal
+        const terminal = document.getElementById('t2_terminal');
+        terminal.textContent = data.logs.join('\n');
+        terminal.scrollTop = terminal.scrollHeight;
+
+        // Display full result
         document.getElementById('t2_result').textContent = JSON.stringify(data, null, 2);
     }
 </script>
