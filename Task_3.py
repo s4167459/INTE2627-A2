@@ -93,12 +93,7 @@ def sign_message(message, encrypted_id, rand_num, n, originator, t_key= t_key):
             "signature": signature,
             "logs": logs
             }
-""" Just a general note that the above sign_message method may function better in html if is a print instead of return
-    if that turns out to be the case, feel free to switch it, William.
-    
-    Additional note for html implementation: call this function 4 times, once for each inventory signature,
-    I'll leave an example of which variables to use below, 
-"""
+
 
 
 
