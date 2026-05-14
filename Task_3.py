@@ -46,7 +46,8 @@ C_er = pow(Cr, PKG_e, PKG_n)
 D_er = pow(Dr, PKG_e, PKG_n)
 
  # initialising the combined encrypted Warehouse IDs
-t_key = pow((Ag * Bg * Cg * Dg),1, PKG_n)
+t_key = pow((Ar * Br * Cr * Dr), 1, PKG_n)
+ # the product of plain random numbers should be used here, not encrypted, as the encryption is done in the signing function to ensure the correct order of operations is followed.
 
 
  # Retrieves the quantity of the item with the ID submitted by the user.
@@ -186,9 +187,11 @@ def verify_signature(multi_sig, hashed_message, a= A_id, b= B_id, c= C_id, d= D_
     first_half = pow(multi_sig, e, n)
     logs.append(f"[CALCULATION] First match check: {multi_sig}^{e} mod {n} = {first_half}")
 
-    second_half = pow((a * b * c * d) * pow(t, hashed_message, n), 1, n)
-    #changed above as it was passing a tuple as the first argument instead of an integer.
-    logs.append(f"[CALCULATION] Second match check: ({a} * {b} * {c} * {d}) * {t}^{hashed_message} mod {n} "
+    second_half = pow((a * b * c * d) * pow(t, hashed_message * e, n), 1, n)
+    # changed above as it was passing a tuple as the first argument instead of an integer. [OBSOLETE]
+    # changed again to match the Harn multi-signature verification equation: multi_sig^e ≡ (A_id * B_id * C_id * D_id) * t^(h*e) mod n 
+    # The original t^h was missing the *e factor needed to balance the equation after raising multi_sig to e.
+    logs.append(f"[CALCULATION] Second match check: ({a} * {b} * {c} * {d}) * {t}^({hashed_message} * {e}) mod {n} "
                 f"= {second_half}")
 
     if first_half == second_half:
