@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 import Task_2
-# import Task_3  # uncomment when Task 3 is ready
+import Task_3  
 
 app = Flask(__name__)
 
@@ -74,47 +74,111 @@ def submit_record():
     return jsonify(result)
 
 
-# Task 3 (placeholders)
+# Task 3
 
-# Handles authorised user query submission
-# TODO: wire up Task_3 query submission function
+# Handles the full Part 2 query workflow:
+# query -> each node signs -> multi-sig -> consensus check -> encrypt
+# verify_signature and RSA_decrypt remain as placeholders until ready
 @app.route('/query', methods=['POST'])
 def query():
-    pass
+    data = request.get_json()
+    item_id = int(data['item_id'])
+    originator = data['originator']
 
-# Handles multi-signature verification of the queried result across nodes
-# TODO: wire up Task_3 multi-signature verification function
-@app.route('/verify_query', methods=['POST'])
-def verify_query():
-    pass
+    all_logs = []
 
-# Handles decryption and recovery of the protected query response at the user side
-# TODO: wire up Task_3 decryption/recovery function
-@app.route('/decrypt_result', methods=['GET'])
-def decrypt_result():
-    pass
+    # Query the item from each node's CSV
+    node_files = {
+        'A': 'InvA.csv',
+        'B': 'InvB.csv',
+        'C': 'InvC.csv',
+        'D': 'InvD.csv',
+    }
+    query_results = {}
+    for node_id, filepath in node_files.items():
+        result = Task_3.query_item(item_id, filepath)
+        query_results[node_id] = result['record'].strip()
+        all_logs.extend(result['logs'])
 
-def initialise_csv_files():
-    """
-    Initialises CSV files for each node upon start, ensuring they exist with a header row and trailing newline (just in case).
-    """
-    node_files = [
-        r'InvA.csv',
-        r'InvB.csv',
-        r'InvC.csv',
-        r'InvD.csv',
-    ]
-    header = "Item_ID,Item_QTY,Item_Price,Location\n"
-    for filepath in node_files:
-        try:
-            with open(filepath, 'r') as f:
-                content = f.read()
-            if not content.endswith('\n'):
-                with open(filepath, 'a') as f:
-                    f.write('\n')
-        except FileNotFoundError:
-            with open(filepath, 'w') as f:
-                f.write(header)
+    # Use originating node's query result as message to sign
+    message = int(query_results[originator].strip())
+    all_logs.append(f"[MESSAGE] Value to be signed: {message}")
+
+    # Each node signs message with their encrypted ID and random number
+    node_params = {
+        'A': {'encrypted_id': Task_3.Ag, 'rand_num': Task_3.Ar},
+        'B': {'encrypted_id': Task_3.Bg, 'rand_num': Task_3.Br},
+        'C': {'encrypted_id': Task_3.Cg, 'rand_num': Task_3.Cr},
+        'D': {'encrypted_id': Task_3.Dg, 'rand_num': Task_3.Dr},
+    }
+    signatures = {}
+    for node_id, params in node_params.items():
+        sig_result = Task_3.sign_message(
+            message,
+            params['encrypted_id'],
+            params['rand_num'],
+            Task_3.PKG_n,
+            node_id
+        )
+        signatures[node_id] = sig_result['signature']
+        all_logs.extend(sig_result['logs'])
+
+    # Compute multi-signature
+    multi_result = Task_3.multi_sig_msg(
+        signatures['A'],
+        signatures['B'],
+        signatures['C'],
+        signatures['D'],
+        Task_3.PKG_n,
+        originator
+    )
+    all_logs.extend(multi_result['logs'])
+
+    # Each node independently computes multi-sig and confirms they all match
+    node_multisigs = {}
+    for node_id, params in node_params.items():
+        node_multi = Task_3.multi_sig_msg(
+            signatures['A'],
+            signatures['B'],
+            signatures['C'],
+            signatures['D'],
+            Task_3.PKG_n,
+            node_id
+        )
+        node_multisigs[node_id] = node_multi['multisig']
+
+    consensus_result = Task_3.confirm_consensus(
+        node_multisigs['A'],
+        node_multisigs['B'],
+        node_multisigs['C'],
+        node_multisigs['D'],
+        originator
+    )
+    all_logs.extend(consensus_result['logs'])
+
+    # Encrypt the result using Procurement Officer's public key
+    encrypt_result = Task_3.RSA_encrypt(message, Task_3.POn, Task_3.POe)
+    all_logs.extend(encrypt_result['logs'])
+
+    # verify_signature and RSA_decrypt held until fully ready
+    # verify_result = Task_3.verify_signature(multi_result['multisig'], hashed_message)
+    # decrypt_result = Task_3.RSA_decrypt(encrypt_result['encrypted_message'], Task_3.POd, Task_3.POn)
+
+    return jsonify({
+        'query_results': query_results,
+        'message': message,
+        'signatures': {k: hex(v) for k, v in signatures.items()},
+        'multi_sig': hex(multi_result['multisig']),
+        'consensus': {
+            'verdict': consensus_result.get('verdict') or consensus_result.get('Verdict'),
+            'A_sig': hex(consensus_result['A_sig']),
+            'B_sig': hex(consensus_result['B_sig']),
+            'C_sig': hex(consensus_result['C_sig']),
+            'D_sig': hex(consensus_result['D_sig']),
+        },
+        'encrypted_result': hex(encrypt_result['encrypted_message']),
+        'logs': all_logs
+    })
 
 # Main implementation
 """

@@ -7,7 +7,7 @@
         .page { display: none; }
         .page.active { display: block; }
         pre { background: #f4f4f4; padding: 10px; }
-        #terminal {
+        .terminal {
             background: #1e1e1e;
             color: #00ff00;
             padding: 10px;
@@ -52,7 +52,7 @@
     </label><br><br>
     <button onclick="signAndVerify()">Sign & Verify</button>
     <h3>Terminal Output</h3>
-    <div id="t1_terminal" style="background:#1e1e1e;color:#00ff00;padding:10px;font-family:monospace;height:300px;overflow-y:scroll;white-space:pre-wrap;"></div>
+    <div id="t1_terminal" class="terminal"></div>
     <h3>Result</h3>
     <pre id="t1_result"></pre>
 </div>
@@ -81,7 +81,7 @@
     <button onclick="submitRecord(false)">Submit Record</button>
     <button onclick="submitRecord(true)">Simulate Malicious Node</button>
     <h3>Terminal Output</h3>
-    <div id="t2_terminal" style="background:#1e1e1e;color:#00ff00;padding:10px;font-family:monospace;height:300px;overflow-y:scroll;white-space:pre-wrap;"></div>
+    <div id="t2_terminal" class="terminal"></div>
     <h3>Result</h3>
     <pre id="t2_result"></pre>
 </div>
@@ -89,7 +89,20 @@
 <!-- Part 2 -->
 <div id="part2" class="page">
     <h2>Part 2 - Multi-Signature Query</h2>
-    <p>Placeholder - Task 3 not yet implemented</p>
+    <label>Item ID: <input type="number" id="t3_item_id" min="1"></label><br><br>
+    <label>Originating Node:
+        <select id="t3_originator">
+            <option>A</option>
+            <option>B</option>
+            <option>C</option>
+            <option>D</option>
+        </select>
+    </label><br><br>
+    <button onclick="queryItem()">Submit Query</button>
+    <h3>Terminal Output</h3>
+    <div id="t3_terminal" class="terminal"></div>
+    <h3>Result</h3>
+    <pre id="t3_result"></pre>
 </div>
 
 <script>
@@ -112,12 +125,10 @@
         });
         const data = await res.json();
 
-        // Display logs in terminal
         const terminal = document.getElementById('t1_terminal');
         terminal.textContent = data.logs.join('\n');
         terminal.scrollTop = terminal.scrollHeight;
 
-        // Display full result
         document.getElementById('t1_result').textContent = JSON.stringify(data, null, 2);
     }
 
@@ -146,13 +157,30 @@
         });
         const data = await res.json();
 
-        // Display logs in terminal
         const terminal = document.getElementById('t2_terminal');
         terminal.textContent = data.logs.join('\n');
         terminal.scrollTop = terminal.scrollHeight;
 
-        // Display full result
         document.getElementById('t2_result').textContent = JSON.stringify(data, null, 2);
+    }
+
+    async function queryItem() {
+        const payload = {
+            item_id: document.getElementById('t3_item_id').value,
+            originator: document.getElementById('t3_originator').value
+        };
+        const res = await fetch('/query', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        const terminal = document.getElementById('t3_terminal');
+        terminal.textContent = data.logs.join('\n');
+        terminal.scrollTop = terminal.scrollHeight;
+
+        document.getElementById('t3_result').textContent = JSON.stringify(data, null, 2);
     }
 </script>
 

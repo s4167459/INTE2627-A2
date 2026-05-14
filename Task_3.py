@@ -68,19 +68,22 @@ def query_item(item_id, filename):
 
 
 # TODO: either use hash method from previous task or create new hash method and call inside of below function
-# TODO: message hasn't been hashed yet, this will exclusively be a test format, full implementation after skeleton
 
  # Signs message using the warehouses respective unique encrypted identifiers
 def sign_message(message, encrypted_id, rand_num, n, originator, t_key= t_key):
-
+    """ The warehouse generates a signature for the message using the encrypted random number, 
+    the combined encrypted warehouse IDs, 
+    and the encrypted ID of the warehouse itself."""
+    #both message and t_key are integers, and must be concatenated together before being hashed, then will be returned as an integer hashed_message
+    hashed_message = Task_1.hash_record(str(t_key)+str(message))
     logs = []
     logs.append(f"[ORIGINATOR] Warehouse {originator} conducting signing of message")
     logs.append(f"[MESSAGE] Message to be signed by Warehouse {originator}")
     logs.append(f"[KEYS] aggregate encrypted random numbers: {t_key}")
     logs.append(f"[KEYS] Encrypted id of Warehouse {originator}: {encrypted_id}")
     logs.append(f"[KEYS] Random number selected by Warehouse {originator}: {rand_num}")
-    logs.append(f"[CALCULATION] {encrypted_id} * {rand_num}^{message} mod {n}")
-    signature = pow((encrypted_id * pow(rand_num, message)),1, n)
+    logs.append(f"[CALCULATION] {encrypted_id} * {rand_num}^{hashed_message} mod {n}")
+    signature = pow((encrypted_id * pow(rand_num, hashed_message)),1, n)
     logs.append(f"[SIGNATURE] signature generated: {signature}")
 
     return {"originator": originator,
