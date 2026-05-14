@@ -77,12 +77,6 @@ def clear_file(file_name):
     file.write("")
     file.close()
 
- # test to see if file is successfully created, and then see what happens when csv is output through print()
-def user_input_file_test():
-    user_in = str(input("Enter CSV record: \n"))
-    print("file has been overwritten with singular record for test purposes)")
-    user_in += "\n"
-    return user_in
 
 def hash_record(record):
     """Takes in a string record and returns the hash value of that record as an integer

@@ -5,13 +5,13 @@ import Task_2
  # Initialising the cryptographic components
 
  # Procurement Officer's cryptographic components
-PO_p = 1080954735722463992988394149602856332100628417
-PO_q = 1158106283320086444890911863299879973542293243
-PO_e = 106506253943651610547613
+POp = 1080954735722463992988394149602856332100628417
+POq = 1158106283320086444890911863299879973542293243
+POe = 106506253943651610547613
  # derived Procurement Officer cryptographic components
-PO_n = PO_p * PO_q
-PO_phi_n = (PO_p-1) * (PO_q-1)
-PO_d = pow(PO_e, -1, PO_n)
+POn = POp * POq
+PO_phi_n = (POp-1) * (POq-1)
+POd = pow(POe, -1, POn)
 
  # PKG cryptographic Parameters.
 PKG_p = 1004162036461488639338597000466705179253226703
@@ -68,6 +68,7 @@ def query_item(item_id, filename):
 
 # TODO: either use hash method from previous task or create new hash method and call inside of below function
 # TODO: message hasn't been hashed yet, this will exclusively be a test format, full implementation after skeleton
+
  # Signs message using individual
 def sign_message(message, encrypted_id, rand_num, n):
 
@@ -82,7 +83,7 @@ def sign_message(message, encrypted_id, rand_num, n):
 """
 
 
- # Calculates multi-signature using all warehouse signatures
+
 def multi_sig_msg(sig_A, sig_B, sig_C, sig_D, n, originator):
     """ Calculates the multi-signature based on the signatures of each warehouse"""
 
