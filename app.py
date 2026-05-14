@@ -14,20 +14,17 @@ def index():
 
 def initialise_csv_files():
     """
-    Initialises CSV files for each node upon start, ensuring they exist with a header row and trailing newline (just in case).
+    Ensures all node CSV files exist with a header row.
+    Does not modify files that already exist and are correctly formatted.
     """
-    node_files = [
-        r'InvA.csv',
-        r'InvB.csv',
-        r'InvC.csv',
-        r'InvD.csv',
-    ]
+    node_files = ['InvA.csv', 'InvB.csv', 'InvC.csv', 'InvD.csv']
     header = "Item_ID,Item_QTY,Item_Price,Location\n"
     for filepath in node_files:
         try:
             with open(filepath, 'r') as f:
                 content = f.read()
-            if not content.endswith('\n'):
+            # Only fix trailing newline if file has content but is missing it
+            if content and not content.endswith('\n'):
                 with open(filepath, 'a') as f:
                     f.write('\n')
         except FileNotFoundError:
@@ -155,7 +152,7 @@ def query():
     )
     all_logs.extend(multi_result['logs'])
 
-    # Each node independently computes multi-sig and confirms they all match
+    # Each node independently computes multi-sig, then confirm they all match
     node_multisigs = {}
     for node_id, params in node_params.items():
         node_multi = Task_3.multi_sig_msg(
@@ -177,13 +174,22 @@ def query():
     )
     all_logs.extend(consensus_result['logs'])
 
+    # Verify the multi-signature using PKG public key
+    hashed_message = Task_3.Task_1.hash_record(str(Task_3.t_key) + str(message))
+    verify_result = Task_3.verify_signature(multi_result['multisig'], hashed_message)
+    all_logs.extend(verify_result['logs'])
+
     # Encrypt the result using Procurement Officer's public key
     encrypt_result = Task_3.RSA_encrypt(message, Task_3.POn, Task_3.POe)
     all_logs.extend(encrypt_result['logs'])
 
-    # verify_signature and RSA_decrypt held until fully ready
-    # verify_result = Task_3.verify_signature(multi_result['multisig'], hashed_message)
-    # decrypt_result = Task_3.RSA_decrypt(encrypt_result['encrypted_message'], Task_3.POd, Task_3.POn)
+    # Procurement Officer decrypts the result
+    decrypt_result = Task_3.RSA_decrypt(
+        encrypt_result['encrypted_message'],
+        Task_3.POd,
+        Task_3.POn
+    )
+    all_logs.extend(decrypt_result['logs'])
 
     return jsonify({
         'query_results': query_results,
@@ -197,7 +203,12 @@ def query():
             'C_sig': hex(consensus_result['C_sig']),
             'D_sig': hex(consensus_result['D_sig']),
         },
+        'verify': {
+            'first_half': hex(verify_result['first_half']),
+            'second_half': hex(verify_result['second_half']),
+        },
         'encrypted_result': hex(encrypt_result['encrypted_message']),
+        'decrypted_result': decrypt_result['plaintext'],
         'logs': all_logs
     })
 

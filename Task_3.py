@@ -10,7 +10,8 @@ POe = 106506253943651610547613
  # derived Procurement Officer cryptographic components
 POn = POp * POq
 PO_phi_n = (POp-1) * (POq-1)
-POd = pow(POe, -1, POn)
+POd = pow(POe, -1, PO_phi_n)
+# fixed wrong variable being used to calculate private key
 
  # PKG cryptographic Parameters.
 PKG_p = 1004162036461488639338597000466705179253226703
@@ -19,7 +20,8 @@ PKG_e = 973028207197278907211
  # Derived Procurement Officer cryptographic components
 PKG_n = PKG_p * PKG_q
 PKG_phi_n = (PKG_p -1) * (PKG_q -1)
-PKG_d = pow(PKG_e, -1, PKG_n)
+PKG_d = pow(PKG_e, -1, PKG_phi_n)
+# another wrong variable used to calculate private key, changed to PKG_e and PKG_phi_n
 
  # initialising warehouse IDs
 A_id = 126
@@ -67,7 +69,7 @@ def query_item(item_id, filename):
 
 
 
-# TODO: either use hash method from previous task or create new hash method and call inside of below function
+
 
  # Signs message using the warehouses respective unique encrypted identifiers
 def sign_message(message, encrypted_id, rand_num, n, originator, t_key= t_key):
@@ -83,7 +85,8 @@ def sign_message(message, encrypted_id, rand_num, n, originator, t_key= t_key):
     logs.append(f"[KEYS] Encrypted id of Warehouse {originator}: {encrypted_id}")
     logs.append(f"[KEYS] Random number selected by Warehouse {originator}: {rand_num}")
     logs.append(f"[CALCULATION] {encrypted_id} * {rand_num}^{hashed_message} mod {n}")
-    signature = pow((encrypted_id * pow(rand_num, hashed_message)),1, n)
+    signature = pow(encrypted_id * pow(rand_num, hashed_message, n), 1, n)
+    # you forgot modulus in the above calculation, which causes python to calculate forever and it never crashes
     logs.append(f"[SIGNATURE] signature generated: {signature}")
 
     return {"originator": originator,
@@ -188,7 +191,8 @@ def verify_signature(multi_sig, hashed_message, a= A_id, b= B_id, c= C_id, d= D_
     first_half = pow(multi_sig, e, n)
     logs.append(f"[CALCULATION] First match check: {multi_sig}^{e} mod {n} = {first_half}")
 
-    second_half = pow(((a * b * c * d) * pow(t,hashed_message),1,n))
+    second_half = pow((a * b * c * d) * pow(t, hashed_message, n), 1, n)
+    #changed above as it was passing a tuple as the first argument instead of an integer.
     logs.append(f"[CALCULATION] Second match check: ({a} * {b} * {c} * {d}) * {t}^{hashed_message} mod {n} "
                 f"= {second_half}")
 

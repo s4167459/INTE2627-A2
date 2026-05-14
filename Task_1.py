@@ -33,7 +33,7 @@ class Record:
 # Functions defined before main code implementation
 
 
-iter_val = 0
+iter_val = 1
 
  # function keeps track of the iterative id of each subsequent record
 """
@@ -46,7 +46,7 @@ def iterate_id():
 
 def get_new_record(quantity, price, location):
     record_id = iter_val
-    final_str = f"{record_id}, {quantity}, {price}, {location}\n"
+    final_str = f"{record_id},{quantity},{price},{location}\n"
     iterate_id()
     if location == 126:
         add_record(r'InvA.csv', final_str)
@@ -152,7 +152,7 @@ def submit_record(node_id, quantity, price, location):
     Returns a dict the frontend can display at each step
     """
     # Create record string
-    record = f"{iter_val}, {quantity}, {price}, {location}"
+    record = f"{iter_val},{quantity},{price},{location}"
     
     # Pick the right keys for the originating node
     keys = get_node_keys(node_id)

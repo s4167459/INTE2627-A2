@@ -3,7 +3,7 @@
 <head>
     <title>DLT Inventory System</title>
     <style>
-        nav a { margin-right: 10px; cursor: pointer; }
+        nav a { margin-right: 10px; cursor: pointer; text-decoration: underline; color: blue; }
         .page { display: none; }
         .page.active { display: block; }
         pre { background: #f4f4f4; padding: 10px; }
@@ -17,6 +17,7 @@
             white-space: pre-wrap;
             margin-top: 10px;
         }
+        .error { color: red; }
     </style>
 </head>
 <body>
@@ -111,6 +112,23 @@
         document.getElementById(id).classList.add('active');
     }
 
+    function displayResult(terminalId, resultId, data) {
+        const terminal = document.getElementById(terminalId);
+        const result = document.getElementById(resultId);
+        if (data.logs && Array.isArray(data.logs)) {
+            terminal.textContent = data.logs.join('\n');
+        } else {
+            terminal.textContent = 'No logs returned.';
+        }
+        terminal.scrollTop = terminal.scrollHeight;
+        result.textContent = JSON.stringify(data, null, 2);
+    }
+
+    function displayError(terminalId, resultId, err) {
+        document.getElementById(terminalId).textContent = 'Request failed.';
+        document.getElementById(resultId).innerHTML = '<span class="error">Error: ' + err + '</span>';
+    }
+
     async function signAndVerify() {
         const payload = {
             node_id: document.getElementById('t1_node').value,
@@ -118,25 +136,23 @@
             price: document.getElementById('t1_price').value,
             location: document.getElementById('t1_location').value
         };
-        const res = await fetch('/sign_and_verify', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(payload)
-        });
-        const data = await res.json();
-
-        const terminal = document.getElementById('t1_terminal');
-        terminal.textContent = data.logs.join('\n');
-        terminal.scrollTop = terminal.scrollHeight;
-
-        document.getElementById('t1_result').textContent = JSON.stringify(data, null, 2);
+        try {
+            const res = await fetch('/sign_and_verify', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            displayResult('t1_terminal', 't1_result', data);
+        } catch (err) {
+            displayError('t1_terminal', 't1_result', err);
+        }
     }
 
     async function submitRecord(simulate_malicious) {
         const node_id = document.getElementById('t2_node').value;
         const nodes = ['A', 'B', 'C', 'D'];
 
-        // Pick a random non-originating node as malicious if simulate_malicious is true
         let malicious_node = null;
         if (simulate_malicious) {
             const others = nodes.filter(n => n !== node_id);
@@ -150,18 +166,17 @@
             location: document.getElementById('t2_location').value,
             malicious_node: malicious_node
         };
-        const res = await fetch('/submit_record', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(payload)
-        });
-        const data = await res.json();
-
-        const terminal = document.getElementById('t2_terminal');
-        terminal.textContent = data.logs.join('\n');
-        terminal.scrollTop = terminal.scrollHeight;
-
-        document.getElementById('t2_result').textContent = JSON.stringify(data, null, 2);
+        try {
+            const res = await fetch('/submit_record', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            displayResult('t2_terminal', 't2_result', data);
+        } catch (err) {
+            displayError('t2_terminal', 't2_result', err);
+        }
     }
 
     async function queryItem() {
@@ -169,18 +184,17 @@
             item_id: document.getElementById('t3_item_id').value,
             originator: document.getElementById('t3_originator').value
         };
-        const res = await fetch('/query', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(payload)
-        });
-        const data = await res.json();
-
-        const terminal = document.getElementById('t3_terminal');
-        terminal.textContent = data.logs.join('\n');
-        terminal.scrollTop = terminal.scrollHeight;
-
-        document.getElementById('t3_result').textContent = JSON.stringify(data, null, 2);
+        try {
+            const res = await fetch('/query', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            displayResult('t3_terminal', 't3_result', data);
+        } catch (err) {
+            displayError('t3_terminal', 't3_result', err);
+        }
     }
 </script>
 

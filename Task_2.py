@@ -62,6 +62,7 @@ def bft_consensus(record, signature, originator_id, malicious_node=None):
 def store_to_all_nodes(record, logs):
     """
     After consensus, store accepted record to every node's local CSV.
+    Ensures record is written on the correct line matching its item ID.
     """
     node_files = {
         'A': r'InvA.csv',
@@ -70,7 +71,14 @@ def store_to_all_nodes(record, logs):
         'D': r'InvD.csv',
     }
     for node_id, filepath in node_files.items():
-        Task_1.add_record(filepath, record + '\n')
+        with open(filepath, 'r') as f:
+            lines = f.readlines()
+        # Strip any trailing blank lines
+        while lines and lines[-1].strip() == '':
+            lines.pop()
+        with open(filepath, 'w') as f:
+            f.writelines(lines)
+            f.write(record + '\n')
         logs.append(f"[STORAGE] Record written to Node {node_id} ({filepath})")
 
 
