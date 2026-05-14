@@ -67,7 +67,7 @@ def submit_record():
     price = data['price']
     location = data['location']
     malicious_node = data.get('malicious_node', None)
-    
+
     # Calls submit_record in Task_2 which runs the full pipeline
     # Returns record, hash, signature, per-node verifications, consensus votes and result
     result = Task_2.submit_record(node_id, quantity, price, location, malicious_node=malicious_node)
@@ -99,5 +99,7 @@ def decrypt_result():
 """
 Just wanted to say, damn, this is impressive, i didn't even notice this file until 11pm while working lmao. Nice work!
 """
+# Thanks lol
 if __name__ == '__main__':
+    """To open the website, run this file and navigate to http://localhost:5000"""
     app.run(debug=True)
