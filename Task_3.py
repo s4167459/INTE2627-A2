@@ -1,5 +1,4 @@
 import Task_1
-import Task_2
 
 
  # Initialising the cryptographic components
@@ -60,12 +59,13 @@ def query_item(item_id, filename):
     for line in file.readlines():
         fl.append(line)
     fl = fl[item_id].split(',')
-    logs.append
+    logs.append(f"[RETRIEVE] retrieved item {item_id} quantity: {fl[1]}")
     return {"record":fl[1],
             "logs": logs}
 
 
-
+def hash_message(message,t_key):
+    
 
 # TODO: either use hash method from previous task or create new hash method and call inside of below function
 # TODO: message hasn't been hashed yet, this will exclusively be a test format, full implementation after skeleton
@@ -165,13 +165,17 @@ def confirm_consensus(A_multi_sig, B_multi_sig, C_multi_sig, D_multi_sig, origin
                 f"logs": logs
         }
 
- # simulates PKG Verifying the returned signatures to ensure they were not tampered
+ # simulates Procurement Officer Verifying the returned signatures to ensure they were not tampered
 def verify_signature(multi_sig, hashed_message, a= A_id, b= B_id, c= C_id, d= D_id, e= PKG_e, n= PKG_n, t= t_key):
 
     """We calculate 2 components the first using the multi-signature and the PKG public key components,
        We then check to see if it matches with the calculation done with the Warehouse IDs and the hashed message
        """
-    Logs = []
+    logs = []
+    logs.append(f"[KEYS] e = {e}")
+    logs.append(f"[KEYS] n = {n}")
+    logs.append(f"[ID] Warehouse A ID: {A_id}")
+
     first_half = pow(multi_sig, e, n)
     second_half = pow(((a * b * c * d) * pow(t,hashed_message),1,n))
     if first_half == second_half:
