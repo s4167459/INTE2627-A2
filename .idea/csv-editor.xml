@@ -10,6 +10,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\InvB.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\test_warehouse.csv">
           <value>
             <Attribute>

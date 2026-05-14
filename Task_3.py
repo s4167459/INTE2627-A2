@@ -4,8 +4,6 @@ import Task_2
 
  # Initialising the cryptographic components
 
-
-
  # Procurement Officer's cryptographic components
 PO_p = 1080954735722463992988394149602856332100628417
 PO_q = 1158106283320086444890911863299879973542293243
@@ -29,29 +27,42 @@ A_id = 126
 B_id= 127
 C_id = 128
 D_id = 129
-
  # Derived encrypted IDs using PKGs secret key
 Ag = pow(A_id, PKG_d, PKG_n)
 Bg = pow(B_id, PKG_d, PKG_n)
 Cg = pow(C_id, PKG_d, PKG_n)
 Dg = pow(D_id, PKG_d, PKG_n)
 
-
  # initialising random number for each warehouse
 Ar = 621
 Br = 721
 Cr = 821
 Dr = 921
-
  # derived encrypted random numbers
 A_er = pow(Ar, PKG_e, PKG_n)
 B_er = pow(Br, PKG_e, PKG_n)
 C_er = pow(Cr, PKG_e, PKG_n)
 D_er = pow(Dr, PKG_e, PKG_n)
 
-
  # initialising the combined encrypted Warehouse IDs
 t_key = pow((Ag * Bg * Cg * Dg),1, PKG_n)
+
+
+ # Retrieves the quantity of the item with the ID submitted by the user.
+def query_item(item_id, filename):
+    logs = []
+    logs.append(f"[SEARCH] search request made")
+    logs.append(f"[ID] designated item id: {item_id}")
+    logs.append(f"[FORWARDED] Search request forwarded to PKG")
+    logs.append(f"[STORAGE] searching inventory records of: {filename}")
+    file = open(filename, 'r')
+    fl = []
+    for line in file.readlines():
+        fl.append(line)
+    fl = fl[item_id].split(',')
+    logs.append
+    return fl[1]
+
 
 
 
@@ -72,24 +83,101 @@ def sign_message(message, encrypted_id, rand_num, n):
 
 
  # Calculates multi-signature using all warehouse signatures
-def multi_sig_msg(sig_1, sig_2, sig_3, sig_4, n):
-    multi_sig = pow((sig_1 * sig_2 * sig_3 * sig_4),1, n)
+def multi_sig_msg(sig_A, sig_B, sig_C, sig_D, n):
+    """ Calculates the multi-signature based on the signatures of each warehouse"""
 
+    logs = []
+    logs.append(f"[SIGNATURE] Warehouse A: {sig_A}")
+    logs.append(f"[SIGNATURE] Warehouse B: {sig_B}")
+    logs.append(f"[SIGNATURE] Warehouse C: {sig_C}")
+    logs.append(f"[SIGNATURE] Warehouse D: {sig_D}")
+    logs.append(f"[CALCULATION] multi-signature: {sig_A} * {sig_B} * {sig_C} * {sig_D} mod {n}")
+
+    multi_sig = pow((sig_A * sig_B * sig_C * sig_D),1, n)
+    logs.append(f"[SIGNATURE] multi-signature: {multi_sig}")
     return multi_sig
 
 
  # TODO: URGENT create input tuple and make sure it returns message, signature, and multisig public component t.
 
- # Verifies the returned signatures to ensure they were not tampered
-def Verify(a= A_id, b= B_id, c= C_id, d= D_id, e= PKG_e, n= PKG_n, t= t_key, msa, msb, msc, msd):
+
+ # Encrypts data using public keys
+def RSA_encrypt(message,n,e):
+    logs = []
+    logs.append(f"[KEYS] n = {n}")
+    logs.append(f"[KEYS] e = {e}")
+    logs.append(f"[MESSAGE] message to be encrypted: {message}")
+    ciphertext = pow(message,e,n)
+    logs.append(f"[CIPHERTEXT] generated ciphertext: {ciphertext}")
+    return {"message": message,
+            "e": e,
+            "n": n,
+            "encrypted_message": ciphertext
+    }
 
 
+ # Simulates the consensus check to ensure all nodes return the same value
+def confirm_consensus(A_multi_sig, B_multi_sig, C_multi_sig, D_multi_sig):
+
+    logs = []
+    logs.append(f"[SIGNATURE] Warehouse A: {A_multi_sig}")
+    logs.append(f"[SIGNATURE] Warehouse B: {B_multi_sig}")
+    logs.append(f"[SIGNATURE] Warehouse C: {C_multi_sig}")
+    logs.append(f"[SIGNATURE] Warehouse D: {D_multi_sig}")
+    logs.append(f"[VERDICT] All signatures match")
+    if A_multi_sig == B_multi_sig == C_multi_sig == D_multi_sig:
+        return {f"A_sig": A_multi_sig,
+                f"B_sig": B_multi_sig,
+                f"C_sig": C_multi_sig,
+                f"D_sig": D_multi_sig,
+                f"Verdict": "All signatures match.",
+                f"logs": logs
+        }
+    else:
+        return {f"A_sig": A_multi_sig,
+                f"B_sig": B_multi_sig,
+                f"C_sig": C_multi_sig,
+                f"D_sig": D_multi_sig,
+                f"Verdict": "Mismatch detected.",
+                f"logs": logs
+        }
+
+ # simulates PKG Verifying the returned signatures to ensure they were not tampered
+def PKG_verify(multi_sig, hashed_message, a= A_id, b= B_id, c= C_id, d= D_id, e= PKG_e, n= PKG_n, t= t_key):
+
+    """We calculate 2 components the first using the multi-signature and the PKG public key components,
+       We then check to see if it matches with the calculation done with the Warehouse IDs and the hashed message
+       """
+    Logs = []
+    first_half = pow(multi_sig, e, n)
+    second_half = pow(((A_id * B_id * C_id * D_id) * pow(t,hashed_message),1,n))
+    if first_half == second_half:
+        return (f"first equation:\n"
+                f"{multi_sig}^{e} mod {n}: {first_half}\n"
+                f"\n"
+                f"Second Equation: ({A_id} * {B_id} * {C_id} * {D_id}) * {t}^{hashed_message} mod {n}\n"
+                f"Both equations have the same result, therefore the signature is valid\n"
+                f"\nMessage has been forwarded")
+    else:
+        return (f"first equation:\n"
+                f"{multi_sig}^{e} mod {n} = {first_half}\n"
+                f"\n"
+                f"Second Equation: ({A_id} * {B_id} * {C_id} * {D_id}) * {t}^{hashed_message} mod {n} "
+                f"= {second_half}\n")
 
 
+ # decrypts the encrypted message
+def RSA_decrypt(encrypted_msg, d, n):
+    """ The Procurement Officer decrypts the message after confirming the signatures are valid"""
+    logs = []
+    logs.append(f"[KEYS] d = {d}")
+    logs.append(f"[KEYS] n = {n}")
+    logs.append(f"[CIPHERTEXT] encrypted data = {encrypted_msg}")
+    logs
+    msg = pow(encrypted_msg, d, n)
+    return
 
-    return result
-
-""" Below is code test running the math, feel free to ignore, but delete before submission {temporary}"""
+""" Below is code test running the math, feel free to ignore, but delete before submission {temporary}
 
  # generate warehouse indi-sig
 a_sig = sign_message(a)
@@ -102,3 +190,6 @@ multi_sig = multi_sig_msg(fill_later)
 
 returned_sig_validate(multi_sig, PKG_e, PKG_n)
 
+"""
+
+print(query_item(1,"InvA.csv"))
