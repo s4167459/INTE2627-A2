@@ -178,26 +178,32 @@ def verify_signature(multi_sig, hashed_message, a= A_id, b= B_id, c= C_id, d= D_
     logs = []
     logs.append(f"[KEYS] e = {e}")
     logs.append(f"[KEYS] n = {n}")
+    logs.append(f"[KEYS] aggregate encrypted random numbers: {t_key}")
     logs.append(f"[ID] Warehouse A ID: {A_id}")
-    logs.append(f"[ID] Warehouse A ID: {A_id}")
-    logs.append(f"[ID] Warehouse A ID: {A_id}")
-    logs.append(f"[ID] Warehouse A ID: {A_id}")
-
+    logs.append(f"[ID] Warehouse B ID: {B_id}")
+    logs.append(f"[ID] Warehouse C ID: {C_id}")
+    logs.append(f"[ID] Warehouse D ID: {D_id}")
+    logs.append(f"[MESSAGE] Hashed message: {hashed_message}")
+    logs.append(f"[SIGNATURE] Multi-Signature: {multi_sig}")
     first_half = pow(multi_sig, e, n)
+    logs.append(f"[CALCULATION] First match check: {multi_sig}^{e} mod {n} = {first_half}")
+
     second_half = pow(((a * b * c * d) * pow(t,hashed_message),1,n))
+    logs.append(f"[CALCULATION] Second match check: ({a} * {b} * {c} * {d}) * {t}^{hashed_message} mod {n} "
+                f"= {second_half}")
+
     if first_half == second_half:
-        return (f"first equation:\n"
-                f"{multi_sig}^{e} mod {n}: {first_half}\n"
-                f"\n"
-                f"Second Equation: ({a} * {b} * {c} * {d}) * {t}^{hashed_message} mod {n}\n"
-                f"Both equations have the same result, therefore the signature is valid\n"
-                f"\nMessage has been forwarded")
+        logs.append(f"[VERDICT] Both equations have the same result, therefore the signature is valid")
+        return {"first_half": first_half,
+                "second_half": second_half,
+                "logs": logs
+                }
     else:
-        return (f"first equation:\n"
-                f"{multi_sig}^{e} mod {n} = {first_half}\n"
-                f"\n"
-                f"Second Equation: ({a} * {b} * {c} * {d}) * {t}^{hashed_message} mod {n} "
-                f"= {second_half}\n")
+        logs.append(f"[VERDICT] Both equations do not match, therefore the signature is invalid")
+        return {"first_half": first_half,
+                "second_half": second_half,
+                "logs": logs
+                }
 
 
  # decrypts the encrypted message
@@ -207,23 +213,11 @@ def RSA_decrypt(encrypted_msg, d, n):
     logs.append(f"[KEYS] d = {d}")
     logs.append(f"[KEYS] n = {n}")
     logs.append(f"[CIPHERTEXT] encrypted data = {encrypted_msg}")
-    logs
     msg = pow(encrypted_msg, d, n)
-    return
+    logs.append(f"[CALCULATION] Decrypting ciphertext: {encrypted_msg}^{d} mod {n}")
+    logs.append(f"[PLAINTEXT] plaintext message (the quantity of item requested): {msg}")
 
-""" Below is code test running the math, feel free to ignore, but delete before submission {temporary}
+    return {"plaintext": msg,
+            "logs": logs
+            }
 
- # generate warehouse indi-sig
-a_sig = sign_message(a)
-b_sig = sign_message(b)
-c_sig = sign_message(c)
-d_sig = sign_message(d)
-
- # generate multi-sig{s} of multi-sig(t,s)
-multi_sig = multi_sig_msg(fill_later)
-
-returned_sig_validate(multi_sig, PKG_e, PKG_n)
-
-"""
-
-print(query_item(1,"InvA.csv"))
