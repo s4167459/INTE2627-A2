@@ -83,10 +83,11 @@ def sign_message(message, encrypted_id, rand_num, n):
 
 
  # Calculates multi-signature using all warehouse signatures
-def multi_sig_msg(sig_A, sig_B, sig_C, sig_D, n):
+def multi_sig_msg(sig_A, sig_B, sig_C, sig_D, n, originator):
     """ Calculates the multi-signature based on the signatures of each warehouse"""
 
     logs = []
+    logs.append(f"[ORIGINATOR] Warehouse conducting multi-signature equation {originator}")
     logs.append(f"[SIGNATURE] Warehouse A: {sig_A}")
     logs.append(f"[SIGNATURE] Warehouse B: {sig_B}")
     logs.append(f"[SIGNATURE] Warehouse C: {sig_C}")
@@ -95,7 +96,7 @@ def multi_sig_msg(sig_A, sig_B, sig_C, sig_D, n):
 
     multi_sig = pow((sig_A * sig_B * sig_C * sig_D),1, n)
     logs.append(f"[SIGNATURE] multi-signature: {multi_sig}")
-    return multi_sig
+    return {"originator": originator}
 
 
  # TODO: URGENT create input tuple and make sure it returns message, signature, and multisig public component t.
@@ -117,20 +118,22 @@ def RSA_encrypt(message,n,e):
 
 
  # Simulates the consensus check to ensure all nodes return the same value
-def confirm_consensus(A_multi_sig, B_multi_sig, C_multi_sig, D_multi_sig):
+def confirm_consensus(A_multi_sig, B_multi_sig, C_multi_sig, D_multi_sig, originator):
 
     logs = []
+    logs.append(f"[ORIGINATOR] Warehouse conducting confirmation: {originator}")
     logs.append(f"[SIGNATURE] Warehouse A: {A_multi_sig}")
     logs.append(f"[SIGNATURE] Warehouse B: {B_multi_sig}")
     logs.append(f"[SIGNATURE] Warehouse C: {C_multi_sig}")
     logs.append(f"[SIGNATURE] Warehouse D: {D_multi_sig}")
     logs.append(f"[VERDICT] All signatures match")
     if A_multi_sig == B_multi_sig == C_multi_sig == D_multi_sig:
-        return {f"A_sig": A_multi_sig,
+        return {f"originator": originator,
+                f"A_sig": A_multi_sig,
                 f"B_sig": B_multi_sig,
                 f"C_sig": C_multi_sig,
                 f"D_sig": D_multi_sig,
-                f"Verdict": "All signatures match.",
+                f"verdict": "All signatures match.",
                 f"logs": logs
         }
     else:
@@ -143,26 +146,26 @@ def confirm_consensus(A_multi_sig, B_multi_sig, C_multi_sig, D_multi_sig):
         }
 
  # simulates PKG Verifying the returned signatures to ensure they were not tampered
-def PKG_verify(multi_sig, hashed_message, a= A_id, b= B_id, c= C_id, d= D_id, e= PKG_e, n= PKG_n, t= t_key):
+def verify_signature(multi_sig, hashed_message, a= A_id, b= B_id, c= C_id, d= D_id, e= PKG_e, n= PKG_n, t= t_key):
 
     """We calculate 2 components the first using the multi-signature and the PKG public key components,
        We then check to see if it matches with the calculation done with the Warehouse IDs and the hashed message
        """
     Logs = []
     first_half = pow(multi_sig, e, n)
-    second_half = pow(((A_id * B_id * C_id * D_id) * pow(t,hashed_message),1,n))
+    second_half = pow(((a * b * c * d) * pow(t,hashed_message),1,n))
     if first_half == second_half:
         return (f"first equation:\n"
                 f"{multi_sig}^{e} mod {n}: {first_half}\n"
                 f"\n"
-                f"Second Equation: ({A_id} * {B_id} * {C_id} * {D_id}) * {t}^{hashed_message} mod {n}\n"
+                f"Second Equation: ({a} * {b} * {c} * {d}) * {t}^{hashed_message} mod {n}\n"
                 f"Both equations have the same result, therefore the signature is valid\n"
                 f"\nMessage has been forwarded")
     else:
         return (f"first equation:\n"
                 f"{multi_sig}^{e} mod {n} = {first_half}\n"
                 f"\n"
-                f"Second Equation: ({A_id} * {B_id} * {C_id} * {D_id}) * {t}^{hashed_message} mod {n} "
+                f"Second Equation: ({a} * {b} * {c} * {d}) * {t}^{hashed_message} mod {n} "
                 f"= {second_half}\n")
 
 
