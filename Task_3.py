@@ -64,18 +64,19 @@ def query_item(item_id, filename):
             "logs": logs}
 
 
-def hash_message(message,t_key):
-    
+
+
 
 # TODO: either use hash method from previous task or create new hash method and call inside of below function
 # TODO: message hasn't been hashed yet, this will exclusively be a test format, full implementation after skeleton
 
  # Signs message using the warehouses respective unique encrypted identifiers
-def sign_message(message, encrypted_id, rand_num, n, originator):
+def sign_message(message, encrypted_id, rand_num, n, originator, t_key= t_key):
 
     logs = []
     logs.append(f"[ORIGINATOR] Warehouse {originator} conducting signing of message")
     logs.append(f"[MESSAGE] Message to be signed by Warehouse {originator}")
+    logs.append(f"[KEYS] aggregate encrypted random numbers: {t_key}")
     logs.append(f"[KEY] Encrypted id of Warehouse {originator}: {encrypted_id}")
     logs.append(f"[KEY] Random number selected by Warehouse {originator}: {rand_num}")
     logs.append(f"[CALCULATION] {encrypted_id} * {rand_num}^{message} mod {n}")
@@ -174,6 +175,9 @@ def verify_signature(multi_sig, hashed_message, a= A_id, b= B_id, c= C_id, d= D_
     logs = []
     logs.append(f"[KEYS] e = {e}")
     logs.append(f"[KEYS] n = {n}")
+    logs.append(f"[ID] Warehouse A ID: {A_id}")
+    logs.append(f"[ID] Warehouse A ID: {A_id}")
+    logs.append(f"[ID] Warehouse A ID: {A_id}")
     logs.append(f"[ID] Warehouse A ID: {A_id}")
 
     first_half = pow(multi_sig, e, n)
