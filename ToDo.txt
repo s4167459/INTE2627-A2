@@ -18,16 +18,8 @@ submitted record should be accepted or rejected.
 database.
 
 Part 2 - Task 3:
-- Initialise the cryptographic parameters required to support multi-signature-based verification and
-secure response delivery using the values provided in the List of Keys document.
-- Implement a mechanism that allows an authorised external user to submit a query request to the
-distributed inventory system.
-- Implement a multi-signature-based verification process in which inventory nodes collectively approve
-the queried result before it is returned.
-- Implement a mechanism that protects the approved response before transmission and allows the
-querying user to recover and verify the returned information.
-- Your implementation must demonstrate both protection of the response and successful recovery of
-the protected data at the user side.
+
+- ENSURE ALL WORK IS CLEANED UP
 
 All tasks:
 - separate CSV files for all warehouse inventory systems, makes life easier.
