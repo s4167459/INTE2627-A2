@@ -174,7 +174,7 @@ def query():
     all_logs.extend(consensus_result['logs'])
 
     # Verify the multi-signature using PKG public key
-    hashed_message = Task_3.Task_1.hash_record(str(Task_3.t_key) + str(message))
+    hashed_message = Task_3.hash_record(str(Task_3.t_key) + str(message))
     verify_result = Task_3.verify_signature(multi_result['multisig'], hashed_message)
     all_logs.extend(verify_result['logs'])
 
