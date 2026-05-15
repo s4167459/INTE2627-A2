@@ -100,7 +100,7 @@ def submit_record():
 def query():
     data = request.get_json()
     item_id = int(data['item_id'])
-    originator = 'A' # hardcoded since all nodes return the same result
+    originator = 'A' # Used for display purposes not used in any cryptographic logic
 
     all_logs = []
     # Procurement Officer encrypts the item_id request with PKG's public key
@@ -132,7 +132,7 @@ def query():
         query_results[node_id] = result['record'].strip()
         all_logs.extend(result['logs'])
 
-    # All nodes return the same value, use any one as the message to sign
+    # PKG aggregates query results and forwards quantity to warehouses for signing
     message = int(query_results['A'].strip())
 
     # Each node signs message with their encrypted ID and random number
@@ -154,8 +154,8 @@ def query():
         signatures[node_id] = sig_result['signature']
         all_logs.extend(sig_result['logs'])
 
-    # Compute multi-signature
-    multi_result = Task_3.multi_sig_msg(
+    # Compute multi-signature for Warehouse A
+    multi_result_a = Task_3.multi_sig_msg(
         signatures['A'],
         signatures['B'],
         signatures['C'],
@@ -163,7 +163,41 @@ def query():
         Task_3.PKG_n,
         originator
     )
-    all_logs.extend(multi_result['logs'])
+    all_logs.extend(multi_result_a['logs'])
+
+    # Compute multi-signature for Warehouse B
+    multi_result_b = Task_3.multi_sig_msg(
+        signatures['A'],
+        signatures['B'],
+        signatures['C'],
+        signatures['D'],
+        Task_3.PKG_n,
+        'B'
+    )
+    all_logs.extend(multi_result_b['logs'])
+
+    # Compute multi-signature for Warehouse C
+    multi_result_c = Task_3.multi_sig_msg(
+        signatures['A'],
+        signatures['B'],
+        signatures['C'],
+        signatures['D'],
+        Task_3.PKG_n,
+        'C'
+    )
+    all_logs.extend(multi_result_c['logs'])
+
+    # Compute multi-signature for Warehouse D
+    multi_result_d = Task_3.multi_sig_msg(
+        signatures['A'],
+        signatures['B'],
+        signatures['C'],
+        signatures['D'],
+        Task_3.PKG_n,
+         "D"
+    )
+    all_logs.extend(multi_result_d['logs'])
+
 
     # Each node independently computes multi-sig, then confirm they all match
     node_multisigs = {}
@@ -189,7 +223,7 @@ def query():
 
     # Verify the multi-signature using PKG public key
     hashed_message = Task_3.hash_record(str(Task_3.t_key) + str(message))
-    verify_result = Task_3.verify_signature(multi_result['multisig'], hashed_message)
+    verify_result = Task_3.verify_signature(multi_result_a['multisig'], hashed_message)
     all_logs.extend(verify_result['logs'])
 
     # Encrypt the result using Procurement Officer's public key
@@ -208,7 +242,7 @@ def query():
         'query_results': query_results,
         'message': message,
         'signatures': {k: hex(v) for k, v in signatures.items()},
-        'multi_sig': hex(multi_result['multisig']),
+        'multi_sig': hex(multi_result_a['multisig']),
         'consensus': {
             'verdict': consensus_result.get('verdict') or consensus_result.get('Verdict'),
             'A_sig': hex(consensus_result['A_sig']),
