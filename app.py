@@ -103,7 +103,22 @@ def query():
     originator = data['originator']
 
     all_logs = []
+    # Procurement Officer encrypts the item_id request with PKG's public key
+    all_logs.append(f"[REQUEST] Procurement Officer initiating secure query for item {item_id}")
+    encrypted_request = Task_3.RSA_encrypt(item_id, Task_3.PKG_n, Task_3.PKG_e)
+    all_logs.append(f"[TRANSMIT] Encrypted query request sent to PKG: {encrypted_request['encrypted_message']}")
+    all_logs.extend(encrypted_request['logs'])
 
+    # PKG decrypts the request with its private key to recover the item_id
+    all_logs.append(f"[PKG] PKG received encrypted request, decrypting with private key")
+    decrypted_request = Task_3.RSA_decrypt(
+        encrypted_request['encrypted_message'],
+        Task_3.PKG_d,
+        Task_3.PKG_n
+    )
+    all_logs.extend(decrypted_request['logs'])
+    item_id = decrypted_request['plaintext']
+    all_logs.append(f"[PKG] Recovered item_id: {item_id}")
     # Query the item from each node's CSV
     node_files = {
         'A': 'InvA.csv',
