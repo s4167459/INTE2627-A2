@@ -64,7 +64,6 @@ def query_item(item_id, filename):
             "logs": logs}
 
 
-
 def hash_record(record):
     """Takes in a string record and returns the hash value of that record as an integer
     """
@@ -72,13 +71,12 @@ def hash_record(record):
     return hash_val
 
 
-
-
  # Signs message using the warehouses respective unique encrypted identifiers
 def sign_message(message, encrypted_id, rand_num, n, originator, t_key= t_key):
     """ The warehouse generates a signature for the message using the encrypted random number, 
     the combined encrypted warehouse IDs, 
     and the encrypted ID of the warehouse itself."""
+
     # both message and t_key are integers, and must be concatenated together before being hashed,
     # they then will be returned as an integer hashed_message
     hashed_message = hash_record(str(t_key)+str(message))
@@ -99,8 +97,6 @@ def sign_message(message, encrypted_id, rand_num, n, originator, t_key= t_key):
             }
 
 
-
-
 def multi_sig_msg(sig_A, sig_B, sig_C, sig_D, n, originator):
     """ Calculates the multi-signature based on the signatures of each warehouse"""
 
@@ -118,9 +114,6 @@ def multi_sig_msg(sig_A, sig_B, sig_C, sig_D, n, originator):
             "multisig":multi_sig,
             "logs":logs
             }
-
-
- # TODO: URGENT create input tuple and make sure it returns message, signature, and multisig public component t.
 
 
  # Encrypts data using public keys
