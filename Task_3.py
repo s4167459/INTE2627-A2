@@ -1,5 +1,4 @@
-import Task_1
-
+import hashlib
 
  # Initialising the cryptographic components
 
@@ -47,7 +46,7 @@ D_er = pow(Dr, PKG_e, PKG_n)
 
  # initialising the combined encrypted Warehouse IDs
 t_key = pow((A_er * B_er * C_er * D_er), 1, PKG_n)
- # the product of plain random numbers should be used here, not encrypted, as the encryption is done in the signing function to ensure the correct order of operations is followed.
+
 
 
  # Retrieves the quantity of the item with the ID submitted by the user.
@@ -68,6 +67,11 @@ def query_item(item_id, filename):
 
 
 
+def hash_record(record):
+    """Takes in a string record and returns the hash value of that record as an integer
+    """
+    hash_val = int(hashlib.md5(record.encode()).hexdigest(), 16)
+    return hash_val
 
 
 
@@ -77,8 +81,9 @@ def sign_message(message, encrypted_id, rand_num, n, originator, t_key= t_key):
     """ The warehouse generates a signature for the message using the encrypted random number, 
     the combined encrypted warehouse IDs, 
     and the encrypted ID of the warehouse itself."""
-    #both message and t_key are integers, and must be concatenated together before being hashed, then will be returned as an integer hashed_message
-    hashed_message = Task_1.hash_record(str(t_key)+str(message))
+    # both message and t_key are integers, and must be concatenated together before being hashed,
+    # they then will be returned as an integer hashed_message
+    hashed_message = hash_record(str(t_key)+str(message))
     logs = []
     logs.append(f"[ORIGINATOR] Warehouse {originator} conducting signing of message")
     logs.append(f"[MESSAGE] Message to be signed by Warehouse {originator}")
@@ -87,7 +92,6 @@ def sign_message(message, encrypted_id, rand_num, n, originator, t_key= t_key):
     logs.append(f"[KEYS] Random number selected by Warehouse {originator}: {rand_num}")
     logs.append(f"[CALCULATION] {encrypted_id} * {rand_num}^{hashed_message} mod {n}")
     signature = pow(encrypted_id * pow(rand_num, hashed_message, n), 1, n)
-    # you forgot modulus in the above calculation, which causes python to calculate forever and it never crashes
     logs.append(f"[SIGNATURE] signature generated: {signature}")
 
     return {"originator": originator,
