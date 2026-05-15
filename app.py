@@ -96,7 +96,6 @@ def submit_record():
 
 # Handles the full Part 2 query workflow:
 # query -> each node signs -> multi-sig -> consensus check -> encrypt
-# verify_signature and RSA_decrypt remain as placeholders until ready
 @app.route('/query', methods=['POST'])
 def query():
     data = request.get_json()
@@ -213,10 +212,7 @@ def query():
     })
 
 # Main implementation
-"""
-Just wanted to say, damn, this is impressive, i didn't even notice this file until 11pm while working lmao. Nice work!
-"""
-# Thanks lol
+
 if __name__ == '__main__':
     """To open the website, run this file and navigate to http://localhost:5000"""
     initialise_csv_files()

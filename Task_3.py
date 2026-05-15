@@ -47,8 +47,6 @@ D_er = pow(Dr, PKG_e, PKG_n)
 
  # initialising the combined encrypted Warehouse IDs
 t_key = pow((A_er * B_er * C_er * D_er), 1, PKG_n)
- # the product of plain random numbers should be used here, not encrypted, as the encryption is done in the signing function to ensure the correct order of operations is followed.
-
 
  # Retrieves the quantity of the item with the ID submitted by the user.
 def query_item(item_id, filename):
@@ -87,7 +85,6 @@ def sign_message(message, encrypted_id, rand_num, n, originator, t_key= t_key):
     logs.append(f"[KEYS] Random number selected by Warehouse {originator}: {rand_num}")
     logs.append(f"[CALCULATION] {encrypted_id} * {rand_num}^{hashed_message} mod {n}")
     signature = pow(encrypted_id * pow(rand_num, hashed_message, n), 1, n)
-    # you forgot modulus in the above calculation, which causes python to calculate forever and it never crashes
     logs.append(f"[SIGNATURE] signature generated: {signature}")
 
     return {"originator": originator,
@@ -188,9 +185,6 @@ def verify_signature(multi_sig, hashed_message, a= A_id, b= B_id, c= C_id, d= D_
     logs.append(f"[CALCULATION] First match check: {multi_sig}^{e} mod {n} = {first_half}")
 
     second_half = pow((a * b * c * d) * pow(t, hashed_message, n), 1, n)
-    # changed above as it was passing a tuple as the first argument instead of an integer. [OBSOLETE]
-    # changed again to match the Harn multi-signature verification equation: multi_sig^e ≡ (A_id * B_id * C_id * D_id) * t^(h*e) mod n 
-    # The original t^h was missing the *e factor needed to balance the equation after raising multi_sig to e.
     logs.append(f"[CALCULATION] Second match check: ({a} * {b} * {c} * {d}) * {t}^{hashed_message} mod {n} "
                 f"= {second_half}")
 
