@@ -59,7 +59,7 @@ def query_item(item_id, filename):
     for line in file.readlines():
         fl.append(line)
     fl = fl[item_id].split(',')
-    logs.append(f"[RETRIEVE] retrieved item {item_id} quantity: {fl[1]}")
+    logs.append(f"[RETRIEVE] retrieved item {item_id} quantity: {fl[1]}\n")
     return {"record":fl[1],
             "logs": logs}
 
@@ -83,14 +83,15 @@ def sign_message(message, encrypted_id, rand_num, n, originator, t_key= t_key):
     # they then will be returned as an integer hashed_message
     hashed_message = hash_record(str(t_key)+str(message))
     logs = []
+    logs.append(f"[HASH] MD5 hash of message: {hashed_message}")
     logs.append(f"[ORIGINATOR] Warehouse {originator} conducting signing of message")
-    logs.append(f"[MESSAGE] Message to be signed by Warehouse {originator}")
+    logs.append(f"[MESSAGE] Message to be signed by Warehouse {originator}: {hashed_message}")
     logs.append(f"[KEYS] aggregate encrypted random numbers: {t_key}")
     logs.append(f"[KEYS] Encrypted id of Warehouse {originator}: {encrypted_id}")
     logs.append(f"[KEYS] Random number selected by Warehouse {originator}: {rand_num}")
     logs.append(f"[CALCULATION] {encrypted_id} * {rand_num}^{hashed_message} mod {n}")
     signature = pow(encrypted_id * pow(rand_num, hashed_message, n), 1, n)
-    logs.append(f"[SIGNATURE] signature generated: {signature}")
+    logs.append(f"[SIGNATURE] signature generated: {signature}\n")
 
     return {"originator": originator,
             "signature": signature,
@@ -112,7 +113,7 @@ def multi_sig_msg(sig_A, sig_B, sig_C, sig_D, n, originator):
     logs.append(f"[CALCULATION] multi-signature: {sig_A} * {sig_B} * {sig_C} * {sig_D} mod {n}")
 
     multi_sig = pow((sig_A * sig_B * sig_C * sig_D),1, n)
-    logs.append(f"[SIGNATURE] multi-signature: {multi_sig}")
+    logs.append(f"[SIGNATURE] multi-signature: {multi_sig}\n")
     return {"originator": originator,
             "multisig":multi_sig,
             "logs":logs
@@ -130,7 +131,7 @@ def RSA_encrypt(message,n,e):
     logs.append(f"[MESSAGE] message to be encrypted: {message}")
     ciphertext = pow(message,e,n)
     logs.append(f"[CALCULATION] {message}^{e} mod {n}")
-    logs.append(f"[CIPHERTEXT] generated ciphertext: {ciphertext}")
+    logs.append(f"[CIPHERTEXT] generated ciphertext: {ciphertext}\n")
     return {"message": message,
             "e": e,
             "n": n,
@@ -150,7 +151,7 @@ def confirm_consensus(A_multi_sig, B_multi_sig, C_multi_sig, D_multi_sig, origin
     logs.append(f"[SIGNATURE] Warehouse D: {D_multi_sig}")
 
     if A_multi_sig == B_multi_sig == C_multi_sig == D_multi_sig:
-        logs.append(f"[VERDICT] All signatures match")
+        logs.append(f"[VERDICT] All signatures match\n")
         return {f"originator": originator,
                 f"A_sig": A_multi_sig,
                 f"B_sig": B_multi_sig,
@@ -160,7 +161,7 @@ def confirm_consensus(A_multi_sig, B_multi_sig, C_multi_sig, D_multi_sig, origin
                 f"logs": logs
         }
     else:
-        logs.append(f"[VERDICT] Mismatch detected.")
+        logs.append(f"[VERDICT] Mismatch detected.\n")
         return {f"originator": originator,
                 f"A_sig": A_multi_sig,
                 f"B_sig": B_multi_sig,
@@ -197,13 +198,13 @@ def verify_signature(multi_sig, hashed_message, a= A_id, b= B_id, c= C_id, d= D_
                 f"= {second_half}")
 
     if first_half == second_half:
-        logs.append(f"[VERDICT] Both equations have the same result, therefore the signature is valid")
+        logs.append(f"[VERDICT] Both equations have the same result, therefore the signature is valid\n")
         return {"first_half": first_half,
                 "second_half": second_half,
                 "logs": logs
                 }
     else:
-        logs.append(f"[VERDICT] Both equations do not match, therefore the signature is invalid")
+        logs.append(f"[VERDICT] Both equations do not match, therefore the signature is invalid\n")
         return {"first_half": first_half,
                 "second_half": second_half,
                 "logs": logs
@@ -219,7 +220,7 @@ def RSA_decrypt(encrypted_msg, d, n):
     logs.append(f"[CIPHERTEXT] encrypted data = {encrypted_msg}")
     msg = pow(encrypted_msg, d, n)
     logs.append(f"[CALCULATION] Decrypting ciphertext: {encrypted_msg}^{d} mod {n}")
-    logs.append(f"[PLAINTEXT] plaintext message (the quantity of item requested): {msg}")
+    logs.append(f"[PLAINTEXT] plaintext message (the quantity of item requested): {msg}\n")
 
     return {"plaintext": msg,
             "logs": logs
