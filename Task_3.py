@@ -47,9 +47,11 @@ D_er = pow(Dr, PKG_e, PKG_n)
  # initialising the combined encrypted Warehouse IDs
 t_key = pow((A_er * B_er * C_er * D_er), 1, PKG_n)
 
- # Retrieves the quantity of the item with the ID submitted by the user.
+
 def query_item(item_id, filename):
-    """ Retrieves the record with the id submitted by the user, and then returns the quantity value of the item."""
+
+    """ Retrieves the record with the id submitted by the user, and then returns the quantity value of the item.
+    """
     logs = []
     logs.append(f"[TITLE] Query")
     logs.append(f"[SEARCH] search request made")
@@ -74,7 +76,7 @@ def hash_record(record):
     return hash_val
 
 
- # Signs message using the warehouses respective unique encrypted identifiers
+
 def sign_message(message, encrypted_id, rand_num, n, originator, t_key= t_key):
 
     """ The warehouse generates a signature for the message using the encrypted random number, 
@@ -103,9 +105,9 @@ def sign_message(message, encrypted_id, rand_num, n, originator, t_key= t_key):
 
 
 def multi_sig_msg(sig_A, sig_B, sig_C, sig_D, n, originator):
+
     """ Calculates the multi-signature based on the signatures of each warehouse.
         This runs once for each warehouse, simulating each node's calculation"""
-
     logs = []
     logs.append(f"[TITLE] Warehouse {originator} Generating Multi-Signature")
     logs.append(f"[SIGNATURE] Warehouse A: {sig_A}")
@@ -122,12 +124,10 @@ def multi_sig_msg(sig_A, sig_B, sig_C, sig_D, n, originator):
             }
 
 
- # Encrypts data using public keys
 def RSA_encrypt(message,n,e):
 
-    """This function encrypts both the initial request made by the Procurement Officer, and the data returned
-       By the query when being returned to the Procurement Officer by the PKG
-       """
+    """Encrypts data using RSA encryption with the provided public key components
+    """
     logs = []
     logs.append(f"[TITLE] RSA Encrypting")
     logs.append(f"[KEYS] n = {n}")
@@ -144,7 +144,7 @@ def RSA_encrypt(message,n,e):
             }
 
 
- # Simulates the consensus check to ensure all nodes return the same value
+
 def confirm_consensus(A_multi_sig, B_multi_sig, C_multi_sig, D_multi_sig, originator):
 
     """ This Function simulates the consensus check initiated by the PKG, ensuring that the multi-signature
@@ -222,6 +222,8 @@ def verify_signature(multi_sig, hashed_message, a= A_id, b= B_id, c= C_id, d= D_
  # decrypts the encrypted message
 def RSA_decrypt(encrypted_msg, d, n):
 
+    """Decrypts data using RSA encryption with the provided private key components
+    """
     logs = []
     logs.append(f"[TITLE] RSA Decrypting")
     logs.append(f"[KEYS] d = {d}")
