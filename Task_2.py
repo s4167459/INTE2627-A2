@@ -88,9 +88,12 @@ def submit_record(node_id, quantity, price, location, malicious_node=None):
     Returns a dict the frontend can display at each step including logs.
     """
     logs = []
-
+    # Count existing data lines (excluding header) to determine new record_id
+    with open('InvA.csv', 'r') as f: # Just need to read one file to get the next record ID, since all nodes will have the same records after consensus
+        lines = [line for line in f.readlines() if line.strip()]
+    record_id = len(lines)  # header is line 0, so first data record gets id 1
+    record = f"{record_id},{quantity},{price},{location}\n"
     # Create the record string
-    record = f"{Task_1.iter_val}, {quantity}, {price}, {location}"
     logs.append(f"[RECORD] Created record: {record}")
 
     # Get originating node's keys
@@ -122,8 +125,6 @@ def submit_record(node_id, quantity, price, location, malicious_node=None):
     # Store to all nodes if consensus passed
     if consensus['consensus_reached']:
         store_to_all_nodes(record, logs)
-        Task_1.iterate_id()
-        logs.append(f"[RECORD] iter_val incremented to {Task_1.iter_val}")
     else:
         logs.append(f"[RECORD] Consensus failed — record not stored")
 
