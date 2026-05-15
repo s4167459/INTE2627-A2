@@ -134,7 +134,6 @@ def query():
 
     # Use originating node's query result as message to sign
     message = int(query_results[originator].strip())
-    all_logs.append(f"[MESSAGE] Value to be signed: {message}")
 
     # Each node signs message with their encrypted ID and random number
     node_params = {
