@@ -91,14 +91,6 @@
 <div id="part2" class="page">
     <h2>Part 2 - Multi-Signature Query</h2>
     <label>Item ID: <input type="number" id="t3_item_id" min="1"></label><br><br>
-    <label>Originating Node:
-        <select id="t3_originator">
-            <option>A</option>
-            <option>B</option>
-            <option>C</option>
-            <option>D</option>
-        </select>
-    </label><br><br>
     <button onclick="queryItem()">Submit Query</button>
     <h3>Terminal Output</h3>
     <div id="t3_terminal" class="terminal"></div>
@@ -182,7 +174,6 @@
     async function queryItem() {
         const payload = {
             item_id: document.getElementById('t3_item_id').value,
-            originator: document.getElementById('t3_originator').value
         };
         try {
             const res = await fetch('/query', {

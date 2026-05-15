@@ -100,7 +100,7 @@ def submit_record():
 def query():
     data = request.get_json()
     item_id = int(data['item_id'])
-    originator = data['originator']
+    originator = 'A' # hardcoded since all nodes return the same result
 
     all_logs = []
     # Procurement Officer encrypts the item_id request with PKG's public key
@@ -132,8 +132,8 @@ def query():
         query_results[node_id] = result['record'].strip()
         all_logs.extend(result['logs'])
 
-    # Use originating node's query result as message to sign
-    message = int(query_results[originator].strip())
+    # All nodes return the same value, use any one as the message to sign
+    message = int(query_results['A'].strip())
 
     # Each node signs message with their encrypted ID and random number
     node_params = {
