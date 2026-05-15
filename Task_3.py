@@ -186,9 +186,12 @@ def verify_signature(multi_sig, hashed_message, a= A_id, b= B_id, c= C_id, d= D_
     logs.append(f"[ID] Warehouse D ID: {D_id}")
     logs.append(f"[MESSAGE] Hashed message: {hashed_message}")
     logs.append(f"[SIGNATURE] Multi-Signature: {multi_sig}")
+
+     # Calculates first half of the match-check to ensure returned signature is valid.
     first_half = pow(multi_sig, e, n)
     logs.append(f"[CALCULATION] First match check: {multi_sig}^{e} mod {n} = {first_half}")
 
+     # Calculates second half of the match-check to ensure returned signature is valid.
     second_half = pow((a * b * c * d) * pow(t, hashed_message, n), 1, n)
     logs.append(f"[CALCULATION] Second match check: ({a} * {b} * {c} * {d}) * {t}^{hashed_message} mod {n} "
                 f"= {second_half}")
@@ -209,7 +212,7 @@ def verify_signature(multi_sig, hashed_message, a= A_id, b= B_id, c= C_id, d= D_
 
  # decrypts the encrypted message
 def RSA_decrypt(encrypted_msg, d, n):
-    """ The Procurement Officer decrypts the message after confirming the signatures are valid"""
+
     logs = []
     logs.append(f"[KEYS] d = {d}")
     logs.append(f"[KEYS] n = {n}")
