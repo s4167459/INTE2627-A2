@@ -1,5 +1,4 @@
-import Task_1
-
+import hashlib
 
  # Initialising the cryptographic components
 
@@ -66,6 +65,11 @@ def query_item(item_id, filename):
 
 
 
+def hash_record(record):
+    """Takes in a string record and returns the hash value of that record as an integer
+    """
+    hash_val = int(hashlib.md5(record.encode()).hexdigest(), 16)
+    return hash_val
 
 
 
@@ -75,8 +79,9 @@ def sign_message(message, encrypted_id, rand_num, n, originator, t_key= t_key):
     """ The warehouse generates a signature for the message using the encrypted random number, 
     the combined encrypted warehouse IDs, 
     and the encrypted ID of the warehouse itself."""
-    #both message and t_key are integers, and must be concatenated together before being hashed, then will be returned as an integer hashed_message
-    hashed_message = Task_1.hash_record(str(t_key)+str(message))
+    # both message and t_key are integers, and must be concatenated together before being hashed,
+    # they then will be returned as an integer hashed_message
+    hashed_message = hash_record(str(t_key)+str(message))
     logs = []
     logs.append(f"[ORIGINATOR] Warehouse {originator} conducting signing of message")
     logs.append(f"[MESSAGE] Message to be signed by Warehouse {originator}")
